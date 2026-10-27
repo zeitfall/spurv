@@ -1,0 +1,50 @@
+{
+  "name": "spurv",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Graphics library based on WebGPU and TypeScript.",
+  "keywords": [
+    "graphics-library",
+    "webgpu",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Vladyslav Matsko",
+    "email": "zeitfall@icloud.com",
+    "url": "https://github.com/zeitfall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeitfall/spurv.git"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test \"src/**/*.test.ts\""
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=26"
+    }
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.74"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

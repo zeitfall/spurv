@@ -1,0 +1,14 @@
+# Normalize all text files to LF in the repository and working tree
+* text=auto eol=lf
+
+# Binary assets (textures, models, environment maps, wasm decoders)
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.hdr  binary
+*.exr  binary
+*.ktx2 binary
+*.glb  binary
+*.bin  binary
+*.wasm binary
