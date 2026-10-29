@@ -22,6 +22,10 @@ Outside the layers:
 
 A milestone is a vertical slice that ends in a runnable example in `examples/`.
 
+| #   | Example         | Scope                                                                              |
+| --- | --------------- | ---------------------------------------------------------------------------------- |
+| 1   | `01-cube`       | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`. |
+
 ## Open questions
 
 | Topic                | Question                                                                                          | Resolved in      |

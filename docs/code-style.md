@@ -58,6 +58,7 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 
 - A file contains one class, one enum object, or a group of related functions or constants.
 - Order: imports → local types → module constants → classes and functions → scratch variables → export statement.
+- An import used only in type positions is written `import type`. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
 - Scratch variables follow the class they instantiate, because a class cannot be instantiated before its declaration (TDZ).
 - Exports are named and grouped in a single `export { … };` statement at the end of the file. No `export default` and no inline `export`.
 - A class file exports exactly its class. An enum file exports exactly its enum object; the value and its type share the name. `types.ts` may export several types.
@@ -65,7 +66,7 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 - Test, script, and example files have no export statement.
 
 ```ts
-import { Matrix4 } from './matrix4.ts';
+import type { Matrix4 } from './matrix4.ts';
 
 interface ProjectionParameters {
     near: number;
@@ -128,7 +129,7 @@ Order:
 - **Constructors** call only `#private` methods of `this`. A subclass's fields are not yet assigned while the base constructor runs.
 - **Static constants** are deeply immutable. A `static #` field holds an `Object.freeze`d instance, is assigned in `static {}`, and is exposed through a CONSTANT_CASE getter. Writes throw `TypeError` because ES modules run in strict mode. Types whose storage cannot be frozen (typed arrays) have no static constants.
 - **`protected`** members state the reason for the exception in a TSDoc `@remarks` tag ([0007](decisions/0007-runtime-encapsulation.md)).
-- **Public methods** are grouped by responsibility. Groups, and members within a group, go from fundamental to derived. Example for `Vector3`: assignment → arithmetic → geometry → transformation → interpolation → comparison → conversion.
+- **Public methods** are grouped by responsibility. Groups, and members within a group, go from fundamental to derived. Example for `Vector3`: assignment → arithmetic → geometry → transformation → interpolation → comparison → conversion. Methods that assign `this` from another representation (`setFromArray`, `setFromAxisAngle`) belong to assignment and follow `set`. `writeToArray` belongs to conversion.
 - **Private methods** follow stepdown order: each sits below its first caller.
 - **Dividers**: when public methods form more than one group, each group starts with a divider, padded with hyphens to column 80:
 
@@ -190,6 +191,8 @@ Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. The
 - Vector components: `x`, `y`, `z`, `w`.
 - Acronyms: `GPU`, `URL`, `JSON`, `WGSL`, `GLTF`, `RGB`, `RGBA`, `HDR`, `UV`, `NDC`, `LOD`.
 - `id`.
+- Interpolation terms: `lerp` (linear interpolation) and `slerp` (spherical linear interpolation), alone or inside a compound identifier: `inverseLerp`.
+- Bounds: `min` and `max`, alone or inside a compound identifier: `minDepth`.
 
 The list is extended only by editing this document.
 
@@ -198,6 +201,10 @@ The list is extended only by editing this document.
 - **Properties and accessors**: an adjective or participle (`enabled`, `visible`, `hidden`), or a verb phrase when one word is insufficient (`castShadow`). Never the `is` prefix.
 - **Variables**: a single adjective when it names the state unambiguously (`enabled`). Otherwise the subject comes first, then `Is`, `Has`, or `Can`, then the condition: `attributeIsDisabled`, `nodeHasChildren`.
 - **Methods**: verbs: `equals()`, `contains()`, `intersects()`.
+
+### Prepositions
+
+A method name takes a preposition only when the role of its argument is otherwise ambiguous. Symmetric operations and binary operations of the form `this ∘ operand` ([Operations](#operations)) take none: `distance(vector)`, `subtract(vector)`. Others do: `projectOnto(vector)`.
 
 ### Enum objects
 
@@ -234,20 +241,37 @@ Comments document the public API. Implementation code is not commented. Unclear 
 Only these comments are permitted:
 
 - TSDoc on the public API.
-- Reference comments: the source of an algorithm or formula taken from external work, or a link to an external bug being worked around.
+- A link to an external bug being worked around.
 - `// TODO: description`.
 - Group dividers ([Class members](#class-members)).
 
 ### TSDoc
 
 - Required on every export of a module's `index.ts` and on every public member of an exported class. Public fields of math value types are exempt.
-- Register: formal, precise, concise. Complete sentences, no contractions, no colloquialisms.
-- The first sentence is a summary in the third-person indicative: "Computes…", "Returns…", "Sets…".
+- Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations. No implementation details.
+- `@remarks` appears only for a fact the caller must know and the sentence cannot state: the result for degenerate input, mutation of an argument, units, the reason for a `protected` member. One sentence per fact.
+- Register: formal, declarative, third person, present tense. No first or second person, no contractions, no hedging, no filler ("simply", "just", "basically", "note that").
 - Tags carry no types. TypeScript provides them.
-- Methods that return `this` omit `@returns`. The class documentation states this convention once.
-- Documentation states what the types cannot: units, coordinate system, mutation of arguments, thrown errors.
-- Sources are cited with `@see`: author, title, venue, and year, or a URL.
-- Tags: `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@example`, `@see`, `@internal`, `@deprecated`.
+- Methods that return `this` omit `@returns`. The class documentation states this convention once, in a second sentence.
+- `@returns` appears only when the sentence does not state the returned value: "Computes…" and "Creates…" omit it, "Writes…" states it.
+- Tags: `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, `@deprecated`.
+
+#### Templates
+
+Declarations of one kind share one template: the verb and the structure come from the table. Synonyms are forbidden: "Computes", never "Calculates", "Gets", "Finds", or "Returns". The receiver is "this \<type\>", an argument is "the given \<noun\>". A term keeps its standard preposition: "the distance between", "the interpolation between". A new kind of declaration adds a row to the table before its first comment is written.
+
+| Declaration                     | Template                                       | Example                                                        |
+| ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------- |
+| Class, interface, type alias    | `A <noun phrase>.`                             | A vector in three-dimensional space.                           |
+| Constructor                     | `Creates <noun phrase> with the given <noun>.` | Creates a vector with the given components.                    |
+| Value computed without mutation | `Computes the <term> of <operands>.`           | Computes the dot product of this vector and the given vector.  |
+| New instance                    | `Creates a copy of this <type>.`               | Creates a copy of this vector.                                 |
+| Mutation of the receiver        | `Sets this <type> to <result>.`                | Sets this vector to the sum of itself and the given vector.    |
+| Predicate                       | `Determines whether <condition>.`              | Determines whether this vector equals the given vector.        |
+| Output into a target            | `Writes <noun phrase> into the given <noun>.`  | Writes the components of this vector into the given array.     |
+| Assertion                       | `Asserts that <condition>.`                    | Asserts that the given numbers are equal within the tolerance. |
+| Field, constant                 | `The <noun phrase>.`                           | The unit vector along the positive Y axis.                     |
+| Parameter                       | `The <role>.`                                  | The subtrahend.                                                |
 
 ```ts
 /**
@@ -261,10 +285,20 @@ class Quaternion {
      * given quaternion.
      *
      * @param quaternion - The target rotation.
-     * @param factor - The interpolation factor in the range [0, 1].
-     * @see K. Shoemake, "Animating Rotation with Quaternion Curves", SIGGRAPH 1985.
+     * @param factor - The interpolation factor, from 0 to 1.
      */
     slerp(quaternion: Quaternion, factor: number) {
+        // ...
+    }
+}
+
+class Vector3 {
+    /**
+     * Sets this vector to the unit vector with the same direction.
+     *
+     * @remarks A zero vector is left unchanged.
+     */
+    normalize() {
         // ...
     }
 }
@@ -308,21 +342,22 @@ throw new RangeError(`PerspectiveCamera.fieldOfView: expected a value in (0, π)
 
 Every copyable type uses these names and semantics:
 
-| Method                            | Semantics                                                     |
-| --------------------------------- | ------------------------------------------------------------- |
-| `set(x, y, z)`                    | Assigns components                                            |
-| `copy(source)`                    | Copies from an instance of the same type                      |
-| `clone()`                         | Returns a new instance                                        |
-| `equals(other, tolerance = 0)`    | Every component differs by at most `tolerance` (absolute)     |
-| `notEquals(other, tolerance = 0)` | Negation of `equals`                                          |
-| `fromArray(array, offset = 0)`    | Reads components from an array                                |
-| `toArray(target, offset = 0)`     | Writes components into the provided array, without allocating |
+| Method                             | Semantics                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------- |
+| `set(x, y, z)`                     | Assigns components                                                        |
+| `setFromArray(array, offset = 0)`  | Assigns components read from an `ArrayLike<number>`                       |
+| `copy(source)`                     | Copies from an instance of the same type                                  |
+| `clone()`                          | Returns a new instance                                                    |
+| `equals(other, tolerance = 0)`     | Every component differs by at most `tolerance` (absolute)                 |
+| `notEquals(other, tolerance = 0)`  | Negation of `equals`                                                      |
+| `writeToArray(target, offset = 0)` | Writes components into the provided array, without allocating; returns it |
 
 ### Operations
 
 - A binary operation computes `this = this ∘ operand`. There are no two-operand variants (`addVectors`, `multiplyMatrices`). Results are composed by chaining: `target.copy(a).add(b)`.
 - Non-commutative multiplication (matrices, quaternions) also offers `premultiply(operand)`, which computes `this = operand × this`.
-- Each method has one signature. A parameter never changes behavior based on its type (`Vector3 | number`): `multiply(vector)` and `multiplyScalar(scalar)` are separate methods.
+- A vector transformed by a matrix is named by the class of the transformation: `transformLinear(matrix)` applies the upper 3×3 block (directions), `transformAffine(matrix)` assumes the bottom row `(0, 0, 0, 1)` (points), `transformProjective(matrix)` divides by `w`.
+- Each method has one signature. A parameter never changes behavior based on its type (`Vector3 | number`): `multiply(vector)` and `scale(factor)` are separate methods.
 
 ### Parameters
 
@@ -333,6 +368,7 @@ Every copyable type uses these names and semantics:
 ## Tests
 
 - Runner: `node:test`. Assertions: `node:assert/strict`, plus the float helpers from `src/testing`.
+- Imports form three groups separated by one blank line: `node:` modules, then the subject under test, then the helpers from `src/testing`.
 - Structure: `describe('<Class>')` → `describe('<member>')` → `it('<behavior>')`. Methods include parentheses (`'normalize()'`) and accessors do not (`'length'`).
 - An `it` name describes behavior in the present tense, without "should": `'leaves a zero-length vector unchanged'`.
 - Each `it` covers one behavior. Several assertions are allowed if they verify that one behavior.
@@ -346,8 +382,9 @@ Every copyable type uses these names and semantics:
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { assertArrayClose } from '../testing/index.ts';
 import { Vector3 } from './vector3.ts';
+
+import { assertArrayClose } from '../testing/index.ts';
 
 describe('Vector3', () => {
     describe('normalize()', () => {
@@ -356,7 +393,7 @@ describe('Vector3', () => {
 
             vector.normalize();
 
-            assertArrayClose(vector.toArray([]), [0.6, 0, 0.8]);
+            assertArrayClose(vector.writeToArray([]), [0.6, 0, 0.8]);
         });
 
         it('leaves a zero-length vector unchanged', () => {
@@ -364,7 +401,7 @@ describe('Vector3', () => {
 
             vector.normalize();
 
-            assert.deepEqual(vector.toArray([]), [0, 0, 0]);
+            assert.deepEqual(vector.writeToArray([]), [0, 0, 0]);
         });
     });
 });
