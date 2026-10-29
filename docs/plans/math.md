@@ -4,15 +4,15 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 
 ## Testing
 
-- [ ] `assertClose`, `assertArrayClose` in `src/testing`
+- [x] `assertClose`, `assertArrayClose` in `src/testing`
 
 ## Vector3
 
-- [ ] Standard methods ([code-style.md](../code-style.md#standard-methods)), including `setFromArray`, `writeToArray`
-- [ ] `add`, `subtract`, `multiply`, `scale`, `negate`
-- [ ] `dot`, `cross`
-- [ ] `length`, `lengthSquared`, `distance`, `normalize`
-- [ ] `lerp`
+- [x] Standard methods ([code-style.md](../code-style.md#standard-methods)), including `setFromArray`, `writeToArray`
+- [x] `add`, `subtract`, `multiply`, `scale`, `negate`
+- [x] `dot`, `cross`
+- [x] `length`, `lengthSquared`, `distance`, `normalize`
+- [x] `lerp`
 
 ## Quaternion
 
