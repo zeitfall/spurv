@@ -9,7 +9,7 @@ A separate `tests/` tree must either deep-import module internals, which violate
 
 ## Decision
 
-- A test lives next to its subject: `src/math/vector3.ts` → `src/math/vector3.test.ts`.
+- A test lives next to its subject: `src/math/vector3.test.ts` tests `src/math/vector3.ts`.
 - Tests belong to their module and may import its internal files.
 - Shared test helpers (float comparison) live in `src/testing/` ([0010](0010-module-boundaries-and-layers.md)).
 - `tsconfig.build.json` excludes `src/**/*.test.ts` and `src/testing/` from `dist/`.

@@ -17,7 +17,7 @@
 - CPU precision is f64. Vectors and quaternions store plain `x`, `y`, `z`, `w` fields. Matrices store a `Float64Array`.
 - Matrices are column-major, matching WGSL `mat4x4f`.
 - Conversion to f32 happens only when data is copied for upload to the GPU ([0004](0004-frame-phases.md)).
-- World and view space: right-handed, Y-up. The camera looks down −Z. This matches glTF, so assets load without axis conversion.
+- World and view space: right-handed, Y-up. The camera looks down -Z. This matches glTF, so assets load without axis conversion.
 - Clip space is defined by WebGPU: NDC is left-handed (+Z points into the screen) and depth is `[0, 1]` ([0002](0002-webgpu-only.md)). The projection matrix performs the handedness flip.
 - Temporaries in hot paths use module-scope scratch instances. `clone()` stays out of hot paths.
 - These classes are *math value types*. Their component fields are public because they carry no invariants ([0007](0007-runtime-encapsulation.md)).

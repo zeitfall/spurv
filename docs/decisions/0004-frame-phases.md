@@ -11,7 +11,7 @@ If the renderer reads user scene objects directly, the GPU-side code is coupled 
 
 Separate the user-facing *main world* from an internal *render world*. Each frame passes through explicit phases (after Bevy):
 
-1. **Extract**: copy the data needed for the frame from the main world into flat render-world structures. f64 → f32 conversion happens here.
+1. **Extract**: copy the data needed for the frame from the main world into flat render-world structures. Conversion from f64 to f32 happens here.
 2. **Prepare**: upload data to GPU buffers and create or update GPU resources.
 3. **Queue**: build draw commands, sorted and grouped by pipeline.
 4. **Render**: execute passes. A frame graph will replace this phase later (Frostbite FrameGraph, GDC 2017).

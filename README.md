@@ -6,7 +6,7 @@ Graphics library based on WebGPU and TypeScript.
 
 ## Requirements
 
-- Node.js ≥ 26
+- Node.js 26 or later
 - A browser with WebGPU support
 
 ## Scripts

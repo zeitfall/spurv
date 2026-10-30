@@ -1,6 +1,6 @@
 # References
 
-External projects are sources of knowledge, not of authority. A decision is justified by its own reasoning in an ADR or in `code-style.md`, never by "project X does it". A borrowed idea names its source, as [0004](decisions/0004-frame-phases.md) does for Bevy.
+External projects are sources of knowledge, not of authority. A decision is justified by its own reasoning in an ADR or in `code-style.md`, never by "project X does it". A borrowed idea names its source, as [0004](decisions/0004-frame-phases.md) does for Bevy. Sources are cited in ADRs and plans, never in code.
 
 | Domain               | Sources                                                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -11,3 +11,5 @@ External projects are sources of knowledge, not of authority. A decision is just
 | Rendering techniques | *Real-Time Rendering*, 4th ed.; Filament documentation                                                       |
 
 Three.js and Babylon.js define the expected feature scope of a general-purpose 3D library. They are not sources for API or architecture. An algorithm found in them is cited from its primary source.
+
+The *3D Math Primer* uses a left-handed system and row vectors (`vM`). spurv uses a right-handed system and column vectors (`Mv`) ([0005](decisions/0005-math-conventions.md)), so the book's matrices are transposed and its products reversed when ported.

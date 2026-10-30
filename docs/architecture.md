@@ -26,7 +26,11 @@ A milestone is a vertical slice that ends in a runnable example in `examples/`.
 | --- | --------------- | ---------------------------------------------------------------------------------- |
 | 1   | `01-cube`       | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`. |
 
+Until `renderer` exists, an example calls WebGPU directly. The WebGPU restriction of [0010](decisions/0010-module-boundaries-and-layers.md) applies to `src/`.
+
 ## Open questions
+
+Questions confined to one module are kept in its plan.
 
 | Topic                | Question                                                                                          | Resolved in      |
 | -------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
