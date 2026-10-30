@@ -75,11 +75,7 @@ class Vector3 {
      * @param vector - The source vector.
      */
     copy(vector: Vector3) {
-        this.x = vector.x;
-        this.y = vector.y;
-        this.z = vector.z;
-
-        return this;
+        return this.set(vector.x, vector.y, vector.z);
     }
 
     /**
@@ -236,11 +232,11 @@ class Vector3 {
      * @returns The given array.
      */
     writeToArray(target: ArrayLike<number>, offset = 0) {
-        // @ts-expect-error TS2542: Index signature in type 'ArrayLike<number>' only permits reading.
+        // @ts-expect-error TS2542: ArrayLike<number> is read-only.
         target[offset + 0] = this.x;
-        // @ts-expect-error TS2542: Index signature in type 'ArrayLike<number>' only permits reading.
+        // @ts-expect-error TS2542: ArrayLike<number> is read-only.
         target[offset + 1] = this.y;
-        // @ts-expect-error TS2542: Index signature in type 'ArrayLike<number>' only permits reading.
+        // @ts-expect-error TS2542: ArrayLike<number> is read-only.
         target[offset + 2] = this.z;
 
         return target;

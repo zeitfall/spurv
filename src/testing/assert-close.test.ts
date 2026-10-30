@@ -38,7 +38,7 @@ describe('assertClose()', () => {
     it('reports the expected value, the tolerance, and the actual value', () => {
         assert.throws(() => assertClose(2, 1, 0.5), {
             name: 'AssertionError',
-            message: 'assertClose: expected 1 ± 0.5, received 2.',
+            message: 'assertClose: expected 1 +/- 0.5, received 2.',
         });
     });
 });
@@ -66,7 +66,7 @@ describe('assertArrayClose()', () => {
     it('rejects an element beyond the tolerance and reports its index', () => {
         assert.throws(() => assertArrayClose([1, 2.75, 3], [1, 2, 3], 0.5), {
             name: 'AssertionError',
-            message: 'assertArrayClose: expected element 1 2 ± 0.5, received 2.75.',
+            message: 'assertArrayClose: expected element 1 2 +/- 0.5, received 2.75.',
         });
     });
 
