@@ -17,7 +17,7 @@ function assertClose(actual: number, expected: number, tolerance = DEFAULT_TOLER
     }
 
     throw new AssertionError({
-        message: `assertClose: expected ${expected} ± ${tolerance}, received ${actual}.`,
+        message: `assertClose: expected ${expected} +/- ${tolerance}, received ${actual}.`,
         actual,
         expected,
         operator: 'assertClose',
@@ -54,7 +54,7 @@ function assertArrayClose(
         }
 
         throw new AssertionError({
-            message: `assertArrayClose: expected element ${i} ${expected[i]} ± ${tolerance}, received ${actual[i]}.`,
+            message: `assertArrayClose: expected element ${i} ${expected[i]} +/- ${tolerance}, received ${actual[i]}.`,
             actual,
             expected,
             operator: 'assertArrayClose',
