@@ -5,7 +5,7 @@
 
 ## Context
 
-- A deep inheritance tree with a god-object base (e.g. Three.js `Object3D` → `Mesh` → `SkinnedMesh`) couples unrelated concerns.
+- A deep inheritance tree with a god-object base (e.g. the Three.js chain `Object3D`, `Mesh`, `SkinnedMesh`) couples unrelated concerns.
 - A full ECS gives poor ergonomics in JavaScript, which has no value-type structs, and complicates the API.
 - Hierarchy is natural for 3D scenes.
 

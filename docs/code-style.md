@@ -5,13 +5,14 @@
 - These rules apply to all TypeScript in the repository: `src/` (tests included), `scripts/`, and `examples/`. WGSL conventions will be defined together with the shader architecture.
 - In the examples below, `// ...` marks omitted code and is not part of the style.
 - **Math value type**: a class in `src/math` whose state is held in public component fields or a component array (`Vector3`, `Quaternion`, `Matrix4`).
-- **Hot path**: any method of a math value type, and any code executed once or more per frame.
+- **Hot path**: any method of a math value type, any function in `src/math`, and any code executed once or more per frame.
 
 ## Formatting
 
 - Indentation: 4 spaces. JSON and YAML use 2.
 - Line length: 100 characters at most. URLs and string literals that cannot be split are exempt. This limit is not enforced by tooling.
 - UTF-8, LF line endings, a final newline, no trailing whitespace.
+- ASCII characters only ([CONTRIBUTING.md](../CONTRIBUTING.md#documentation)).
 - `.editorconfig` encodes these settings.
 
 ## Syntax
@@ -28,8 +29,8 @@
 ## Layout
 
 - One blank line separates logical blocks. Two consecutive blank lines never appear.
-- A blank line follows a group of declarations, surrounds every control-flow statement (`if`, `for`, `while`, `switch`, `try`), and precedes `return` unless the `return` is the only statement in its block.
-- A blank line never directly follows an opening brace or directly precedes a closing brace.
+- A blank line follows a group of declarations, surrounds every control-flow statement (`if`, `for`, `while`, `do`, `switch`, `try`), and precedes `return`.
+- A blank line never directly follows an opening brace or directly precedes a closing brace. This rule overrides the previous one.
 - Class members are separated by one blank line. Consecutive field declarations form one group with no blank lines between them.
 - Related variables form a group named with a shared prefix for their entity: `canvasWidth`, `canvasHeight`. A blank line separates groups.
 
@@ -49,19 +50,19 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 ## Files
 
 - File and directory names use kebab-case: `perspective-camera.ts`. Exempt: root documents (`README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `LICENSE`).
-- Numbered names start with the number and a hyphen: `0005-math-conventions.md`, `examples/01-triangle/`.
+- Numbered names start with the number and a hyphen: `0005-math-conventions.md`, `examples/01-cube/`.
 - Digits attach to the preceding word: `vector3.ts`, `matrix4.ts`.
-- An acronym counts as a single word: `WebGPURenderer` → `webgpu-renderer.ts`.
+- An acronym counts as a single word: `WebGPURenderer` lives in `webgpu-renderer.ts`.
 - Test files are named `<subject>.test.ts`.
 
 ## File structure
 
 - A file contains one class, one enum object, or a group of related functions or constants.
-- Order: imports → local types → module constants → classes and functions → scratch variables → export statement.
+- Order: imports, local types, module constants, classes and functions, scratch variables, export statement.
 - An import used only in type positions is written `import type`. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
 - Scratch variables follow the class they instantiate, because a class cannot be instantiated before its declaration (TDZ).
-- Exports are named and grouped in a single `export { … };` statement at the end of the file. No `export default` and no inline `export`.
-- A class file exports exactly its class. An enum file exports exactly its enum object; the value and its type share the name. `types.ts` may export several types.
+- Exports are named and grouped in a single `export { ... };` statement at the end of the file. No `export default` and no inline `export`.
+- A class file exports exactly its class. `types.ts` may export several types.
 - `index.ts` contains only named re-exports: `export { Vector3 } from './vector3.ts';` and `export type { Renderable } from './types.ts';`. `export *` is forbidden.
 - Test, script, and example files have no export statement.
 
@@ -89,7 +90,6 @@ export { Vector3 };
 - **Local**: used only within its file. Declared after the imports and not exported.
 - **Module-shared**: used by several files of one module. Placed in `src/<module>/types.ts`, imported directly by those files, and not exported from `index.ts`.
 - **Cross-module or public**: used by another module or appearing in a public signature (parameters, options, return values). Placed in `src/<module>/types.ts` and exported from `index.ts`. If it is not part of the public API, it is marked `@internal`.
-- A shared enum object lives in its own file: `src/materials/blend-mode.ts`.
 - There is no global `src/types/` directory.
 
 ### Annotations
@@ -99,7 +99,7 @@ export { Vector3 };
   - narrowing to a read-only type (`Readonly<T>`, `ReadonlyMap<K, V>`, `ReadonlySet<T>`, `readonly T[]`) for a value that is frozen or newly created. A read-only annotation never replaces runtime protection, so internal collections are never returned ([0007](decisions/0007-runtime-encapsulation.md));
   - recursion, where the compiler requires an annotation.
 - `interface` describes object shapes and class contracts. `type` is used only for what an interface cannot express: unions, tuples, function types, mapped types, and conditional types.
-- `unknown` is used for values of unknown type and narrowed before use. `any` is permitted only when unavoidable, with a comment stating why.
+- `unknown` is used for values of unknown type and narrowed before use. `any` is permitted only when unavoidable, with a comment stating why ([Comments](#comments)).
 - Non-null assertions (`value!`) and definite assignment assertions (`field!: T`) are forbidden.
 - Type assertions (`value as T`) are permitted only where the compiler cannot know the type: `querySelector('canvas') as HTMLCanvasElement`. They are never used to silence a type error. `as const` is not a type assertion.
 
@@ -126,12 +126,12 @@ Order:
 
 - **Fields**: every field of a class that is not a math value type is `#private` and is exposed through accessors ([0007](decisions/0007-runtime-encapsulation.md)).
 - **Initialization**: fields are declared without initializers. Instance fields are assigned in the constructor. Static fields are assigned in a static initialization block (`static {}`).
-- **Constructors** call only `#private` methods of `this`. A subclass's fields are not yet assigned while the base constructor runs.
+- **Constructors** never call a public or `protected` method of `this`. A subclass's fields are not yet assigned while the base constructor runs.
 - **Static constants** are deeply immutable. A `static #` field holds an `Object.freeze`d instance, is assigned in `static {}`, and is exposed through a CONSTANT_CASE getter. Writes throw `TypeError` because ES modules run in strict mode. Types whose storage cannot be frozen (typed arrays) have no static constants.
 - **`protected`** members state the reason for the exception in a TSDoc `@remarks` tag ([0007](decisions/0007-runtime-encapsulation.md)).
-- **Public methods** are grouped by responsibility. Groups, and members within a group, go from fundamental to derived. Example for `Vector3`: assignment → arithmetic → geometry → transformation → interpolation → comparison → conversion. Methods that assign `this` from another representation (`setFromArray`, `setFromAxisAngle`) belong to assignment and follow `set`. `writeToArray` belongs to conversion.
+- **Public methods** are grouped by responsibility. Groups, and members within a group, go from fundamental to derived. Example for `Vector3`: assignment, arithmetic, geometry, transformation, interpolation, comparison, conversion. Methods that assign `this` from another representation (`setFromArray`, `setFromAxisAngle`) belong to assignment and follow `set`. `writeToArray` belongs to conversion.
 - **Private methods** follow stepdown order: each sits below its first caller.
-- **Dividers**: when public methods form more than one group, each group starts with a divider, padded with hyphens to column 80:
+- **Dividers**: when public methods form more than one group, each group starts with a divider, padded with hyphens to a width of 79 characters, indentation included:
 
 ```ts
     // Arithmetic -------------------------------------------------------------
@@ -204,7 +204,7 @@ The list is extended only by editing this document.
 
 ### Prepositions
 
-A method name takes a preposition only when the role of its argument is otherwise ambiguous. Symmetric operations and binary operations of the form `this ∘ operand` ([Operations](#operations)) take none: `distance(vector)`, `subtract(vector)`. Others do: `projectOnto(vector)`.
+A method name takes a preposition only when the role of its argument is otherwise ambiguous. Symmetric operations and binary operations that update the receiver ([Operations](#operations)) take none: `distance(vector)`, `subtract(vector)`. Others do: `projectOnto(vector)`.
 
 ### Enum objects
 
@@ -219,6 +219,7 @@ type BlendMode = (typeof BlendMode)[keyof typeof BlendMode];
 export { BlendMode };
 ```
 
+- An enum object lives in its own file (`src/materials/blend-mode.ts`), which exports only that object. The value and its type share the name.
 - Each value equals its key. When the enum mirrors a WebGPU enumeration, the value is instead the WebGPU string, so it passes to the API without mapping: `TextureFormat.RGBA8_UNORM = 'rgba8unorm'`.
 
 ### Scratch variables
@@ -242,18 +243,19 @@ Only these comments are permitted:
 
 - TSDoc on the public API.
 - A link to an external bug being worked around.
+- The reason for a compiler directive or an `any`: `// @ts-expect-error TS2542: ArrayLike<number> is read-only.`
 - `// TODO: description`.
 - Group dividers ([Class members](#class-members)).
 
 ### TSDoc
 
 - Required on every export of a module's `index.ts` and on every public member of an exported class. Public fields of math value types are exempt.
-- Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations. No implementation details.
+- Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations ([references.md](references.md)). No implementation details.
 - `@remarks` appears only for a fact the caller must know and the sentence cannot state: the result for degenerate input, mutation of an argument, units, the reason for a `protected` member. One sentence per fact.
 - Register: formal, declarative, third person, present tense. No first or second person, no contractions, no hedging, no filler ("simply", "just", "basically", "note that").
 - Tags carry no types. TypeScript provides them.
 - Methods that return `this` omit `@returns`. The class documentation states this convention once, in a second sentence.
-- `@returns` appears only when the sentence does not state the returned value: "Computes…" and "Creates…" omit it, "Writes…" states it.
+- `@returns` appears only when the sentence does not state the returned value: "Computes..." and "Creates..." omit it; "Writes..." requires it.
 - Tags: `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, `@deprecated`.
 
 #### Templates
@@ -315,14 +317,14 @@ class Vector3 {
 
 - Only built-in error classes are used.
 - In `async` functions, a throw becomes a rejection with the same error.
-- Constructors, setters, and resource-creating functions outside hot paths validate their arguments. Hot paths never validate. Math value types handle degenerate input as defined in [0005](decisions/0005-math-conventions.md).
+- Constructors, setters, and resource-creating functions outside hot paths validate their arguments. There is no development-only validation mode (`__DEV__`). Hot paths never validate. Math value types handle degenerate input as defined in [0005](decisions/0005-math-conventions.md).
 - Only `Error` instances are thrown. A wrapped error is preserved as `cause`: `new Error(message, { cause: error })`.
 - Errors are never swallowed. An empty `catch` is forbidden. A `catch` either adds context and rethrows, or recovers deliberately.
 - GPU errors (validation, out-of-memory, device loss, shader compilation) are always surfaced.
 - Message format: `<Owner>.<member>: expected <expectation>, received <actual>.` The owner is the class name for members, `<Class>.constructor` for constructors, and the function name for free functions.
 
 ```ts
-throw new RangeError(`PerspectiveCamera.fieldOfView: expected a value in (0, π), received ${value}.`);
+throw new RangeError(`PerspectiveCamera.fieldOfView: expected a value in (0, Math.PI), received ${value}.`);
 ```
 
 ## API conventions
@@ -340,7 +342,7 @@ throw new RangeError(`PerspectiveCamera.fieldOfView: expected a value in (0, π)
 
 ### Standard methods
 
-Every copyable type uses these names and semantics:
+Every copyable type uses these names and semantics. `set(x, y, z)` is the `Vector3` form; other types take their own components.
 
 | Method                             | Semantics                                                                 |
 | ---------------------------------- | ------------------------------------------------------------------------- |
@@ -354,9 +356,9 @@ Every copyable type uses these names and semantics:
 
 ### Operations
 
-- A binary operation computes `this = this ∘ operand`. There are no two-operand variants (`addVectors`, `multiplyMatrices`). Results are composed by chaining: `target.copy(a).add(b)`.
-- Non-commutative multiplication (matrices, quaternions) also offers `premultiply(operand)`, which computes `this = operand × this`.
-- A vector transformed by a matrix is named by the class of the transformation: `transformLinear(matrix)` applies the upper 3×3 block (directions), `transformAffine(matrix)` assumes the bottom row `(0, 0, 0, 1)` (points), `transformProjective(matrix)` divides by `w`.
+- A binary operation combines `this` with the operand and stores the result in `this`: `a.subtract(b)` sets `a` to `a - b`. There are no two-operand variants (`addVectors`, `multiplyMatrices`). Results are composed by chaining: `target.copy(a).add(b)`.
+- Non-commutative multiplication (matrices, quaternions) also offers `premultiply(operand)`, which multiplies in the opposite order: `a.premultiply(b)` sets `a` to `b * a`.
+- A vector transformed by a matrix is named by the class of the transformation: `transformLinear(matrix)` applies the upper-left 3x3 block (directions), `transformAffine(matrix)` assumes the bottom row `(0, 0, 0, 1)` (points), `transformProjective(matrix)` divides by `w`.
 - Each method has one signature. A parameter never changes behavior based on its type (`Vector3 | number`): `multiply(vector)` and `scale(factor)` are separate methods.
 
 ### Parameters
@@ -369,11 +371,11 @@ Every copyable type uses these names and semantics:
 
 - Runner: `node:test`. Assertions: `node:assert/strict`, plus the float helpers from `src/testing`.
 - Imports form three groups separated by one blank line: `node:` modules, then the subject under test, then the helpers from `src/testing`.
-- Structure: `describe('<Class>')` → `describe('<member>')` → `it('<behavior>')`. Methods include parentheses (`'normalize()'`) and accessors do not (`'length'`).
+- Structure: `describe('<Class>')`, nested `describe('<member>')`, nested `it('<behavior>')`. Methods include parentheses (`'normalize()'`) and accessors do not (`'length'`). A file of functions has one top-level `describe('<function>()')` per function.
 - An `it` name describes behavior in the present tense, without "should": `'leaves a zero-length vector unchanged'`.
 - Each `it` covers one behavior. Several assertions are allowed if they verify that one behavior.
 - Blank lines, not comments, separate arrange, act, and assert.
-- Expected values are independent of the code under test: derived by hand or taken from a cited source.
+- Expected values are independent of the code under test: derived by hand or taken from a cited source ([references.md](references.md)).
 - Every degenerate case documented in TSDoc has a test. Every bug fix adds a regression test, written before the fix.
 - Tests are deterministic: no unseeded randomness, no dependence on time, no mutable state shared between tests.
 - Results of floating-point arithmetic are compared with `assertClose` or `assertArrayClose` (default tolerance `1e-12`), never with the `equals` method of the code under test. Exact assertions (`assert.equal`, `assert.deepEqual`) are used only when the expected value involves no arithmetic.

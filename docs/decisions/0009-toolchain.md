@@ -14,7 +14,7 @@
 | Need              | Tool                                                                |
 | ----------------- | ------------------------------------------------------------------- |
 | Type checking     | `tsc` (`tsconfig.json`)                                             |
-| Build             | `tsc -p tsconfig.build.json` → unbundled ESM + `.d.ts` in `dist/`   |
+| Build             | `tsc -p tsconfig.build.json`: unbundled ESM and `.d.ts` in `dist/`  |
 | Tests             | `node:test`, run directly on `.ts` sources                          |
 | Example dev server | Custom `node:http` server with live reload ([0012](0012-examples-via-public-api.md)) |
 | Formatter, linter | None for now                                                        |

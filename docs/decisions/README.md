@@ -3,9 +3,9 @@
 Format: [Michael Nygard, 2011](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions).
 
 - File: `NNNN-kebab-title.md`. Numbers are never reused.
-- Status: `Proposed` → `Accepted` → (`Superseded by NNNN` | `Deprecated`).
-- An ADR is required for changes to modules and layers, the toolchain, public API conventions, or any rule an existing ADR states. Changes confined to `docs/code-style.md` or `docs/architecture.md` do not need one.
-- An Accepted ADR becomes immutable once merged into `main`. A changed decision gets a new ADR that supersedes the old one.
+- Status: `Proposed`, then `Accepted` or `Rejected`. An Accepted ADR may later become `Superseded by NNNN` or `Deprecated`.
+- An ADR is required to change the set of modules, their layers, the import rules, the toolchain, or any rule an existing ADR states. Changes to `docs/code-style.md` (API conventions included) or `docs/architecture.md` that contradict no ADR do not need one, nor does creating a module already planned in `docs/architecture.md`.
+- An Accepted ADR becomes immutable once merged into `main`, except for its Status line and editorial corrections that keep its meaning (typos, links, characters). A changed decision gets a new ADR that supersedes the old one.
 - An Accepted ADR depends only on Accepted ADRs.
 
 ## Template

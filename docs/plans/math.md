@@ -6,6 +6,10 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 
 - [x] `assertClose`, `assertArrayClose` in `src/testing`
 
+## Scalar
+
+- [x] `clamp`, `lerp`, `inverseLerp`
+
 ## Vector3
 
 - [x] Standard methods ([code-style.md](../code-style.md#standard-methods)), including `setFromArray`, `writeToArray`
