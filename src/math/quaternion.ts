@@ -201,13 +201,13 @@ class Quaternion {
     /**
      * Sets this quaternion to the unit quaternion with the same direction.
      *
-     * @remarks A zero quaternion becomes the identity quaternion.
+     * @remarks A zero quaternion is left unchanged.
      */
     normalize() {
         const length = this.length;
 
         if (length === 0) {
-            return this.identity();
+            return this;
         }
 
         return this.scale(1 / length);
