@@ -120,7 +120,7 @@ class Vector3 {
      * @param factor - The scalar multiplier.
      */
     scale(factor: number) {
-        return this.set(this.x * factor, this.y * factor, this.z * factor);
+        return this.set(factor * this.x, factor * this.y, factor * this.z);
     }
 
     /**
@@ -207,9 +207,11 @@ class Vector3 {
      * @param tolerance - The maximum absolute difference per component.
      */
     equals(vector: Vector3, tolerance = 0) {
-        return Math.abs(this.x - vector.x) <= tolerance &&
+        return (
+            Math.abs(this.x - vector.x) <= tolerance &&
             Math.abs(this.y - vector.y) <= tolerance &&
-            Math.abs(this.z - vector.z) <= tolerance;
+            Math.abs(this.z - vector.z) <= tolerance
+        );
     }
 
     /**

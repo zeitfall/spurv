@@ -20,7 +20,8 @@
 - Strings use single quotes. Template literals are used only for interpolation or multi-line strings.
 - Every statement ends with a semicolon.
 - Every multi-line comma-separated list ends with a trailing comma. This covers arrays, objects, parameters, arguments, type parameters, tuples, imports, and exports. Single-line lists never take one.
-- Every control-flow body has braces. The opening brace goes on the same line as the statement, the body starts on a new line, and `else` follows the closing brace: `} else {`.
+- Every control-flow body has braces. The opening brace goes on the same line as the statement, the body starts on a new line, and `else`, `catch`, and `finally` start on the line after the closing brace.
+- In a product of a scalar and a component, the scalar comes first: `factor * this.x`, `sinHalfAngle * axis.x`. A product of two components keeps the operand order of the formula: `this.x * vector.x`, `aw * bx`.
 - Arrow function parameters are always parenthesized: `(value) => value * 2`.
 - Braces have inner spaces and brackets do not: `{ a, b }`, `[1, 2]`.
 - **Negation**: the `!` operator may appear only as the entire condition of a guard clause, applied to a boolean, when the body is a single `return`, `continue`, `break`, or `throw`. Any other negated boolean is written `=== false`. Non-boolean values are compared explicitly (`=== null`, `!== 0`). `!==` is unrestricted. In an `if`/`else`, the positive condition comes first.
@@ -131,10 +132,14 @@ Order:
 - **`protected`** members state the reason for the exception in a TSDoc `@remarks` tag ([0007](decisions/0007-runtime-encapsulation.md)).
 - **Public methods** are grouped by responsibility. Groups, and members within a group, go from fundamental to derived. Example for `Vector3`: assignment, arithmetic, geometry, transformation, interpolation, comparison, conversion. Methods that assign `this` from another representation (`setFromArray`, `setFromAxisAngle`) belong to assignment and follow `set`. `writeToArray` belongs to conversion.
 - **Private methods** follow stepdown order: each sits below its first caller.
-- **Dividers**: when public methods form more than one group, each group starts with a divider, padded with hyphens to a width of 79 characters, indentation included:
+- **Dividers**: when public methods form more than one group, each group starts with a divider, padded with hyphens to a width of 79 characters, indentation included. Private methods of such a class start with a `Private` divider:
 
 ```ts
     // Arithmetic -------------------------------------------------------------
+```
+
+```ts
+    // Private ----------------------------------------------------------------
 ```
 
 ```ts
@@ -185,7 +190,7 @@ Every other binding, including local `const`, uses camelCase.
 
 ### Abbreviations
 
-Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. These are the only permitted short forms:
+Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. These short forms are permitted everywhere:
 
 - Loop counters: `i`, `j`, `k`.
 - Vector components: `x`, `y`, `z`, `w`.
@@ -194,7 +199,13 @@ Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. The
 - Interpolation terms: `lerp` (linear interpolation) and `slerp` (spherical linear interpolation), alone or inside a compound identifier: `inverseLerp`.
 - Bounds: `min` and `max`, alone or inside a compound identifier: `minDepth`.
 
-The list is extended only by editing this document.
+These short forms are permitted only for local variables in `src/math`:
+
+- Operand prefixes: `a` or `b` for the first or second operand of a binary operation: `ax`, `bw`.
+- Trigonometric functions: `sin`, `cos`, `tan`, prefixed to the name of the argument in the order of the formula: `sinHalfAngle`. This order overrides the shared-prefix rule of [Layout](#layout).
+- Coefficients of a linear combination: `k` followed by an index starting at 0: `k0`, `k1`.
+
+Both lists are extended only by editing this document. A short form is added to the second list only when it is standard in the literature of the field, is confined to local variables, and does not collide with an existing short form.
 
 ### Booleans
 

@@ -20,11 +20,11 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 
 ## Quaternion
 
-- [ ] Standard methods, `identity`
-- [ ] `setFromAxisAngle`
-- [ ] `multiply`, `premultiply`
-- [ ] `length`, `lengthSquared`, `normalize`, `conjugate`, `invert`
-- [ ] `dot`, `slerp`
+- [x] Standard methods, `identity`
+- [x] `setFromAxisAngle`
+- [x] `multiply`, `premultiply`
+- [x] `scale`, `length`, `lengthSquared`, `normalize`, `conjugate`, `invert`
+- [x] `dot`, `slerp`. Source: K. Shoemake, "Animating Rotation with Quaternion Curves", 1985.
 
 ## Matrix4
 
