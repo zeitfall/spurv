@@ -194,6 +194,7 @@ Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. The
 
 - Loop counters: `i`, `j`, `k`.
 - Vector components: `x`, `y`, `z`, `w`.
+- Matrix elements: `m` followed by the row and column indices starting at 0: `m00`, `m23`.
 - Acronyms: `GPU`, `URL`, `JSON`, `WGSL`, `GLTF`, `RGB`, `RGBA`, `HDR`, `UV`, `NDC`, `LOD`.
 - `id`.
 - Interpolation terms: `lerp` (linear interpolation) and `slerp` (spherical linear interpolation), alone or inside a compound identifier: `inverseLerp`.
@@ -216,6 +217,10 @@ Both lists are extended only by editing this document. A short form is added to 
 ### Prepositions
 
 A method name takes a preposition only when the role of its argument is otherwise ambiguous. Symmetric operations and binary operations that update the receiver ([Operations](#operations)) take none: `distance(vector)`, `subtract(vector)`. Others do: `projectOnto(vector)`.
+
+### Named values
+
+A method that sets the receiver to a named value of its type is named by the noun of that value, without a verb: `identity()`, `perspective()`.
 
 ### Enum objects
 
@@ -329,6 +334,7 @@ class Vector3 {
 - Only built-in error classes are used.
 - In `async` functions, a throw becomes a rejection with the same error.
 - Constructors, setters, and resource-creating functions outside hot paths validate their arguments. There is no development-only validation mode (`__DEV__`). Hot paths never validate. Math value types handle degenerate input as defined in [0005](decisions/0005-math-conventions.md).
+- A method of a math value type whose result does not exist for its input leaves the receiver unchanged: normalizing a zero vector or quaternion, inverting a zero quaternion or a singular matrix.
 - Only `Error` instances are thrown. A wrapped error is preserved as `cause`: `new Error(message, { cause: error })`.
 - Errors are never swallowed. An empty `catch` is forbidden. A `catch` either adds context and rethrows, or recovers deliberately.
 - GPU errors (validation, out-of-memory, device loss, shader compilation) are always surfaced.

@@ -475,12 +475,12 @@ describe('Quaternion', () => {
             assertArrayClose(quaternion.writeToArray([]), [-0.5, 0.5, -0.5, 0.5]);
         });
 
-        it('sets a zero quaternion to the identity quaternion', () => {
+        it('leaves a zero quaternion unchanged', () => {
             const quaternion = new Quaternion(0, 0, 0, 0);
 
             quaternion.normalize();
 
-            assert.deepEqual(quaternion.writeToArray([]), [0, 0, 0, 1]);
+            assert.deepEqual(quaternion.writeToArray([]), [0, 0, 0, 0]);
         });
 
         it('returns this', () => {
