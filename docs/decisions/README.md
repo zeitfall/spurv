@@ -37,3 +37,4 @@ Format: [Michael Nygard, 2011](https://cognitect.com/blog/2011/11/15/documenting
 | [0010](0010-module-boundaries-and-layers.md)     | Module boundaries and layers          | Accepted |
 | [0011](0011-colocated-tests.md)                  | Colocated tests                       | Accepted |
 | [0012](0012-examples-via-public-api.md)          | Examples via the public API           | Accepted |
+| [0013](0013-reversed-z-depth.md)                 | Reversed-Z depth                      | Accepted |
