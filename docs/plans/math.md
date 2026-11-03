@@ -32,7 +32,7 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 - [ ] `multiply`, `premultiply`
 - [ ] `transpose`, `determinant`, `invert`
 - [ ] `compose(position, rotation, scale)`
-- [ ] `perspective`
+- [ ] `perspective` ([0013](../decisions/0013-reversed-z-depth.md))
 
 ## Angles
 
@@ -41,7 +41,3 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 ## Out of scope
 
 `Vector2`, `Vector4`, `Matrix3`, `lookAt`, `decompose`, Euler conversion, vector-by-matrix transforms, geometric primitives.
-
-## Open questions
-
-- Reversed-Z in `perspective`. Source: N. Reed, "Depth Precision Visualized", 2015.

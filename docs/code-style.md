@@ -125,7 +125,7 @@ Order:
 7. Public methods.
 8. `#private` methods.
 
-- **Fields**: every field of a class that is not a math value type is `#private` and is exposed through accessors ([0007](decisions/0007-runtime-encapsulation.md)).
+- **Fields**: every field of a class that is not a math value type is `#private` and is exposed through accessors ([0007](decisions/0007-runtime-encapsulation.md)). A math value type that stores its components in an array holds the array in a `#private` field exposed through a getter: the components stay public ([0005](decisions/0005-math-conventions.md)), and the array cannot be replaced.
 - **Initialization**: fields are declared without initializers. Instance fields are assigned in the constructor. Static fields are assigned in a static initialization block (`static {}`).
 - **Constructors** never call a public or `protected` method of `this`. A subclass's fields are not yet assigned while the base constructor runs.
 - **Static constants** are deeply immutable. A `static #` field holds an `Object.freeze`d instance, is assigned in `static {}`, and is exposed through a CONSTANT_CASE getter. Writes throw `TypeError` because ES modules run in strict mode. Types whose storage cannot be frozen (typed arrays) have no static constants.
