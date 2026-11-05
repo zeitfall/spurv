@@ -28,11 +28,11 @@ Goal: the math required by milestone 1 ([architecture.md](../architecture.md#mil
 
 ## Matrix4
 
-- [ ] Standard methods, `identity`
-- [ ] `multiply`, `premultiply`
-- [ ] `transpose`, `determinant`, `invert`
-- [ ] `compose(position, rotation, scale)`
-- [ ] `perspective` ([0013](../decisions/0013-reversed-z-depth.md))
+- [x] Standard methods, `identity`
+- [x] `multiply`, `premultiply`
+- [x] `transpose`, `determinant`, `invert`
+- [x] `setFromQuaternion`, `compose(position, rotation, scale)`
+- [x] `perspective` ([0013](../decisions/0013-reversed-z-depth.md)). Matches glam `Mat4::perspective_rh` with the near and far distances swapped in the depth row.
 
 ## Angles
 

@@ -1,10 +1,10 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-import { Quaternion } from './quaternion.ts';
 import { Vector3 } from './vector3.ts';
+import { Quaternion } from './quaternion.ts';
 
-import { assertArrayClose, assertClose } from '../testing/index.ts';
+import { assertClose, assertArrayClose } from '../testing/index.ts';
 
 function createRotationAroundY(angle: number) {
     return new Quaternion(0, Math.sin(angle / 2), 0, Math.cos(angle / 2));

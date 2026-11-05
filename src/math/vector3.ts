@@ -59,6 +59,7 @@ class Vector3 {
      *
      * @param array - The source array.
      * @param offset - The index of the x component.
+     *
      * @remarks An element absent from the array is read as zero.
      */
     setFromArray(array: ArrayLike<number>, offset = 0) {

@@ -1,7 +1,7 @@
-import { describe, it } from 'node:test';
 import assert, { AssertionError } from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-import { assertArrayClose, assertClose } from './assert-close.ts';
+import { assertClose, assertArrayClose } from './assert-close.ts';
 
 describe('assertClose()', () => {
     it('accepts equal values', () => {

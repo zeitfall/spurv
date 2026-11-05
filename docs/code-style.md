@@ -10,7 +10,7 @@
 ## Formatting
 
 - Indentation: 4 spaces. JSON and YAML use 2.
-- Line length: 100 characters at most. URLs and string literals that cannot be split are exempt. This limit is not enforced by tooling.
+- Line length: 120 characters at most. URLs and string literals that cannot be split are exempt. This limit is not enforced by tooling.
 - UTF-8, LF line endings, a final newline, no trailing whitespace.
 - ASCII characters only ([CONTRIBUTING.md](../CONTRIBUTING.md#documentation)).
 - `.editorconfig` encodes these settings.
@@ -60,6 +60,8 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 
 - A file contains one class, one enum object, or a group of related functions or constants.
 - Order: imports, local types, module constants, classes and functions, scratch variables, export statement.
+- Imports form groups separated by one blank line: external modules (`node:`, packages), then other modules of `src`, then files of the same module. External modules are ordered alphabetically. Within the other groups, a file follows the files it depends on, and unrelated files are ordered alphabetically. Names inside braces follow the export order of their source, or alphabetical order for external modules. `import type` does not affect the order. Test files order their groups as described in [Tests](#tests).
+- Re-exports in `index.ts` form groups separated by one blank line, by the kind of source file, in this order: functions and constants, enum objects, classes, types (`export type`). Within a group, re-exports follow the same order as imports. The export statement of a file lists names in the order of their declarations.
 - An import used only in type positions is written `import type`. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
 - Scratch variables follow the class they instantiate, because a class cannot be instantiated before its declaration (TDZ).
 - Exports are named and grouped in a single `export { ... };` statement at the end of the file. No `export default` and no inline `export`.
@@ -71,8 +73,8 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 import type { Matrix4 } from './matrix4.ts';
 
 interface ProjectionParameters {
-    near: number;
-    far: number;
+    nearDistance: number;
+    farDistance: number;
 }
 
 class Vector3 {
@@ -190,7 +192,7 @@ Every other binding, including local `const`, uses camelCase.
 
 ### Abbreviations
 
-Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. These short forms are permitted everywhere:
+Names visible outside a function body (exports, types, class members, parameters, module-level bindings) use full words: `position`, `direction`, `index`, `fieldOfView`. These short forms are the only exceptions:
 
 - Loop counters: `i`, `j`, `k`.
 - Vector components: `x`, `y`, `z`, `w`.
@@ -200,13 +202,9 @@ Identifiers use full words: `position`, `direction`, `index`, `fieldOfView`. The
 - Interpolation terms: `lerp` (linear interpolation) and `slerp` (spherical linear interpolation), alone or inside a compound identifier: `inverseLerp`.
 - Bounds: `min` and `max`, alone or inside a compound identifier: `minDepth`.
 
-These short forms are permitted only for local variables in `src/math`:
+Local variables follow the same rule, except in `src/math` outside tests, where they may use the notation of the formula they implement: `ax`, `sinHalfAngle`, `k0`, `c00`, `m` for an element array. The notation overrides the shared-prefix rule of [Layout](#layout). The same quantity has the same name throughout `src/math`.
 
-- Operand prefixes: `a` or `b` for the first or second operand of a binary operation: `ax`, `bw`.
-- Trigonometric functions: `sin`, `cos`, `tan`, prefixed to the name of the argument in the order of the formula: `sinHalfAngle`. This order overrides the shared-prefix rule of [Layout](#layout).
-- Coefficients of a linear combination: `k` followed by an index starting at 0: `k0`, `k1`.
-
-Both lists are extended only by editing this document. A short form is added to the second list only when it is standard in the literature of the field, is confined to local variables, and does not collide with an existing short form.
+The list is extended only by editing this document.
 
 ### Booleans
 
@@ -261,18 +259,20 @@ Only these comments are permitted:
 - A link to an external bug being worked around.
 - The reason for a compiler directive or an `any`: `// @ts-expect-error TS2542: ArrayLike<number> is read-only.`
 - `// TODO: description`.
+- The reason for code deliberately duplicated from another member: `// Inlined from the determinant getter: the inverse reuses c00 to c03.`
 - Group dividers ([Class members](#class-members)).
 
 ### TSDoc
 
 - Required on every export of a module's `index.ts` and on every public member of an exported class. Public fields of math value types are exempt.
 - Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations ([references.md](references.md)). No implementation details.
-- `@remarks` appears only for a fact the caller must know and the sentence cannot state: the result for degenerate input, mutation of an argument, units, the reason for a `protected` member. One sentence per fact.
+- `@remarks` appears only for a fact the caller must know and the sentence cannot state: the result for degenerate input, mutation of an argument, units, the reason for a `protected` member. One short sentence per fact. A fact the sentence can state, such as the order of elements, goes into the sentence.
 - Register: formal, declarative, third person, present tense. No first or second person, no contractions, no hedging, no filler ("simply", "just", "basically", "note that").
 - Tags carry no types. TypeScript provides them.
 - Methods that return `this` omit `@returns`. The class documentation states this convention once, in a second sentence.
 - `@returns` appears only when the sentence does not state the returned value: "Computes..." and "Creates..." omit it; "Writes..." requires it.
 - Tags: `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, `@deprecated`.
+- Layout: a blank line separates the sentence, the group of `@typeParam`, `@param`, and `@returns` tags, and each other tag.
 
 #### Templates
 
@@ -282,6 +282,7 @@ Declarations of one kind share one template: the verb and the structure come fro
 | ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------- |
 | Class, interface, type alias    | `A <noun phrase>.`                             | A vector in three-dimensional space.                           |
 | Constructor                     | `Creates <noun phrase> with the given <noun>.` | Creates a vector with the given components.                    |
+| Constructor without parameters  | `Creates <noun phrase>.`                       | Creates an identity matrix.                                    |
 | Value computed without mutation | `Computes the <term> of <operands>.`           | Computes the dot product of this vector and the given vector.  |
 | New instance                    | `Creates a copy of this <type>.`               | Creates a copy of this vector.                                 |
 | Mutation of the receiver        | `Sets this <type> to <result>.`                | Sets this vector to the sum of itself and the given vector.    |
@@ -348,7 +349,7 @@ throw new RangeError(`PerspectiveCamera.fieldOfView: expected a value in (0, Mat
 
 ### Accessors and methods
 
-- A getter is used when the value is computed in O(1), has no side effects, allocates nothing, and takes no arguments: `vector.length`, `vector.lengthSquared`. Everything else is a method: `vector.dot(other)`, `matrix.determinant()`.
+- A getter is used when the value is computed in O(1), has no side effects, allocates nothing, and takes no arguments: `vector.length`, `matrix.determinant`. A computation over a fixed number of components is O(1). Everything else is a method: `vector.dot(other)`, `matrix.invert()`.
 - Math value types have no setters for derived values. Use `vector.setLength(5)`, not `vector.length = 5`.
 
 ### Units
@@ -381,13 +382,13 @@ Every copyable type uses these names and semantics. `set(x, y, z)` is the `Vecto
 ### Parameters
 
 - No boolean parameters. Use separate methods or an options property instead.
-- Math value types take positional parameters, with default values for optional ones. Elsewhere, more than three parameters, or any optional parameter, require an options object: `new PerspectiveCamera({ fieldOfView, near, far })`.
+- Math value types take positional parameters, with default values for optional ones. Elsewhere, more than three parameters, or any optional parameter, require an options object: `new PerspectiveCamera({ fieldOfView, nearDistance, farDistance })`.
 - Output parameters are named `target` (`targetPosition`, `targetRotation`) and documented.
 
 ## Tests
 
 - Runner: `node:test`. Assertions: `node:assert/strict`, plus the float helpers from `src/testing`.
-- Imports form three groups separated by one blank line: `node:` modules, then the subject under test, then the helpers from `src/testing`.
+- Imports form three groups separated by one blank line: `node:` modules, then the subject under test with the files of its module that the test uses, then the helpers from `src/testing`. Within each group, imports follow [File structure](#file-structure).
 - Structure: `describe('<Class>')`, nested `describe('<member>')`, nested `it('<behavior>')`. Methods include parentheses (`'normalize()'`) and accessors do not (`'length'`). A file of functions has one top-level `describe('<function>()')` per function.
 - An `it` name describes behavior in the present tense, without "should": `'leaves a zero-length vector unchanged'`.
 - Each `it` covers one behavior. Several assertions are allowed if they verify that one behavior.
@@ -398,8 +399,8 @@ Every copyable type uses these names and semantics. `set(x, y, z)` is the `Vecto
 - Results of floating-point arithmetic are compared with `assertClose` or `assertArrayClose` (default tolerance `1e-12`), never with the `equals` method of the code under test. Exact assertions (`assert.equal`, `assert.deepEqual`) are used only when the expected value involves no arithmetic.
 
 ```ts
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import { Vector3 } from './vector3.ts';
 

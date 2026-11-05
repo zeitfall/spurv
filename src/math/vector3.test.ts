@@ -1,9 +1,9 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import { Vector3 } from './vector3.ts';
 
-import { assertArrayClose, assertClose } from '../testing/index.ts';
+import { assertClose, assertArrayClose } from '../testing/index.ts';
 
 describe('Vector3', () => {
     describe('constructor()', () => {

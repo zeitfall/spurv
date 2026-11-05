@@ -1,5 +1,4 @@
 import { clamp } from './scalar.ts';
-
 import type { Vector3 } from './vector3.ts';
 
 /**
@@ -73,8 +72,8 @@ class Quaternion {
      *
      * @param array - The source array.
      * @param offset - The index of the x component.
-     * @remarks An absent x, y, or z element is read as zero, and an absent w element is read
-     * as one.
+     *
+     * @remarks An absent x, y, or z element is read as zero, and an absent w as one.
      */
     setFromArray(array: ArrayLike<number>, offset = 0) {
         return this.set(
@@ -90,8 +89,8 @@ class Quaternion {
      *
      * @param axis - The rotation axis.
      * @param angle - The rotation angle.
-     * @remarks The angle is in radians. The axis is expected to be a unit vector, and a
-     * non-unit axis yields a non-unit quaternion.
+     *
+     * @remarks The angle is in radians. A non-unit axis yields a non-unit quaternion.
      */
     setFromAxisAngle(axis: Vector3, angle: number) {
         const halfAngle = angle / 2;
@@ -128,8 +127,6 @@ class Quaternion {
      * Sets this quaternion to the product of itself and the given quaternion.
      *
      * @param quaternion - The right operand.
-     * @remarks The resulting rotation applies the given rotation first and this rotation
-     * second.
      */
     multiply(quaternion: Quaternion) {
         return this.#multiplyQuaternions(this, quaternion);
@@ -139,8 +136,6 @@ class Quaternion {
      * Sets this quaternion to the product of the given quaternion and itself.
      *
      * @param quaternion - The left operand.
-     * @remarks The resulting rotation applies this rotation first and the given rotation
-     * second.
      */
     premultiply(quaternion: Quaternion) {
         return this.#multiplyQuaternions(quaternion, this);
@@ -221,8 +216,8 @@ class Quaternion {
      *
      * @param quaternion - The end quaternion.
      * @param factor - The interpolation factor.
-     * @remarks Both quaternions are expected to be unit quaternions. The interpolation follows
-     * the shorter arc between the two rotations.
+     *
+     * @remarks The interpolation follows the shorter arc.
      */
     slerp(quaternion: Quaternion, factor: number) {
         const dotProduct = this.dot(quaternion);
@@ -269,8 +264,6 @@ class Quaternion {
      *
      * @param quaternion - The compared quaternion.
      * @param tolerance - The maximum absolute difference per component.
-     * @remarks A quaternion and its negation are not equal, although they represent the same
-     * rotation.
      */
     equals(quaternion: Quaternion, tolerance = 0) {
         return (

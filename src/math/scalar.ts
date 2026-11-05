@@ -4,6 +4,7 @@
  * @param value - The input value.
  * @param min - The lower bound.
  * @param max - The upper bound.
+ *
  * @remarks A lower bound greater than the upper bound yields the upper bound.
  */
 function clamp(value: number, min: number, max: number) {
@@ -28,6 +29,7 @@ function lerp(from: number, to: number, factor: number) {
  * @param from - The start value.
  * @param to - The end value.
  * @param value - The interpolated value.
+ *
  * @remarks Equal bounds yield zero.
  */
 function inverseLerp(from: number, to: number, value: number) {
