@@ -93,6 +93,7 @@ async function sendExampleIndex(response: ServerResponse) {
         .filter((entry) => entry.isDirectory())
         .map((entry) => entry.name)
         .sort();
+
     const exampleLinks = exampleNames.map((name) => `<li><a href="/examples/${name}/">${name}</a></li>`);
 
     const html = [

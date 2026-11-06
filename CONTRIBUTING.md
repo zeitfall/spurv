@@ -34,6 +34,7 @@ spurv follows [Conventional Commits 1.0.0](https://www.conventionalcommits.org/e
 | `fix`      | A bug fix                                                     |
 | `perf`     | A change that improves performance without changing behavior |
 | `refactor` | A code change that neither fixes a bug nor adds a feature     |
+| `style`    | Formatting that does not change the meaning of the code       |
 | `test`     | Adding or fixing tests                                        |
 | `docs`     | Documentation only, including ADRs and code comments          |
 | `build`    | Build scripts, TypeScript config, dependencies                |
