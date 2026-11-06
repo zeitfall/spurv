@@ -1,4 +1,5 @@
 import { clamp } from './scalar.ts';
+
 import type { Vector3 } from './vector3.ts';
 
 /**

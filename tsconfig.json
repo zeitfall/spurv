@@ -20,7 +20,11 @@
     "rewriteRelativeImportExtensions": true,
 
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+
+    "paths": {
+      "spurv": ["./src/index.ts"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "scripts", "examples"]
 }

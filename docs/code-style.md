@@ -60,9 +60,9 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 
 - A file contains one class, one enum object, or a group of related functions or constants.
 - Order: imports, local types, module constants, classes and functions, scratch variables, export statement.
-- Imports form groups separated by one blank line: external modules (`node:`, packages), then other modules of `src`, then files of the same module. External modules are ordered alphabetically. Within the other groups, a file follows the files it depends on, and unrelated files are ordered alphabetically. Names inside braces follow the export order of their source, or alphabetical order for external modules. `import type` does not affect the order. Test files order their groups as described in [Tests](#tests).
+- Imports form groups separated by one blank line: external modules (`node:`, packages), then other modules of `src`, then files of the same module, then type imports. External modules are ordered alphabetically. Within the other groups, a file follows the files it depends on, and unrelated files are ordered alphabetically. Names inside braces follow the export order of their source, or alphabetical order for external modules. The type group is ordered like the groups above it, external modules first. Test files order their groups as described in [Tests](#tests).
 - Re-exports in `index.ts` form groups separated by one blank line, by the kind of source file, in this order: functions and constants, enum objects, classes, types (`export type`). Within a group, re-exports follow the same order as imports. The export statement of a file lists names in the order of their declarations.
-- An import used only in type positions is written `import type`. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
+- An import used only in type positions is written `import type`. A source that provides both runtime values and types appears in both groups. The inline `type` modifier is not used. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
 - Scratch variables follow the class they instantiate, because a class cannot be instantiated before its declaration (TDZ).
 - Exports are named and grouped in a single `export { ... };` statement at the end of the file. No `export default` and no inline `export`.
 - A class file exports exactly its class. `types.ts` may export several types.
@@ -388,7 +388,7 @@ Every copyable type uses these names and semantics. `set(x, y, z)` is the `Vecto
 ## Tests
 
 - Runner: `node:test`. Assertions: `node:assert/strict`, plus the float helpers from `src/testing`.
-- Imports form three groups separated by one blank line: `node:` modules, then the subject under test with the files of its module that the test uses, then the helpers from `src/testing`. Within each group, imports follow [File structure](#file-structure).
+- Imports form three groups separated by one blank line: `node:` modules, then the subject under test with the files of its module that the test uses, then the helpers from `src/testing`. Type imports, if any, form a fourth group last. Within each group, imports follow [File structure](#file-structure).
 - Structure: `describe('<Class>')`, nested `describe('<member>')`, nested `it('<behavior>')`. Methods include parentheses (`'normalize()'`) and accessors do not (`'length'`). A file of functions has one top-level `describe('<function>()')` per function.
 - An `it` name describes behavior in the present tense, without "should": `'leaves a zero-length vector unchanged'`.
 - Each `it` covers one behavior. Several assertions are allowed if they verify that one behavior.
