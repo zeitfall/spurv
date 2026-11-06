@@ -34,6 +34,7 @@
 - A blank line never directly follows an opening brace or directly precedes a closing brace. This rule overrides the previous one.
 - Class members are separated by one blank line. Consecutive field declarations form one group with no blank lines between them.
 - Related variables form a group named with a shared prefix for their entity: `canvasWidth`, `canvasHeight`. A blank line separates groups.
+- A declaration that spans more than one line is separated from adjacent statements by a blank line. A comment directly above a declaration belongs to it. This rule overrides the shared-prefix grouping.
 
 ```ts
 function computeAspectRatio(canvas: HTMLCanvasElement) {

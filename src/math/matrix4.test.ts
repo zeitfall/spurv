@@ -411,9 +411,11 @@ describe('Matrix4', () => {
 
         it('equals the product of the translation, rotation, and scale matrices', () => {
             const rotation = new Quaternion(0.5, 0.5, -0.5, 0.5);
+
             const product = createTranslation(1, -2, 3)
                 .multiply(new Matrix4().setFromQuaternion(rotation))
                 .multiply(createScale(2, -1, 0.5));
+
             const matrix = createGeneralMatrix();
 
             matrix.compose(new Vector3(1, -2, 3), rotation, new Vector3(2, -1, 0.5));
