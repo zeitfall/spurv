@@ -295,4 +295,4 @@ function createDepthStencilTexture(width: number, height: number) {
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
         format: DEPTH_TEXTURE_FORMAT,
     });
-    }
+}
