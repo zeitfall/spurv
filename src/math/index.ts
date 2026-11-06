@@ -1,3 +1,4 @@
+export { degreesToRadians, radiansToDegrees } from './angle.ts';
 export { clamp, lerp, inverseLerp } from './scalar.ts';
 
 export { Vector3 } from './vector3.ts';
