@@ -1,6 +1,6 @@
 # 0006. Transform change tracking
 
-- Status: Accepted
+- Status: Superseded by 0015
 - Date: 2026-10-27
 
 ## Context

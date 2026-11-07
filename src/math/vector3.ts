@@ -232,6 +232,7 @@ class Vector3 {
      *
      * @param target - The destination array.
      * @param offset - The index of the x component.
+     *
      * @returns The given array.
      */
     writeToArray(target: ArrayLike<number>, offset = 0) {

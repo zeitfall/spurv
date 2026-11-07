@@ -32,7 +32,7 @@
 - One blank line separates logical blocks. Two consecutive blank lines never appear.
 - A blank line follows a group of declarations, surrounds every control-flow statement (`if`, `for`, `while`, `do`, `switch`, `try`), and precedes `return`.
 - A blank line never directly follows an opening brace or directly precedes a closing brace. This rule overrides the previous one.
-- Class members are separated by one blank line. Consecutive field declarations form one group with no blank lines between them.
+- Class members are separated by one blank line. Fields form groups by the responsibility of the class they serve, and a blank line separates groups. Fields named with a shared prefix for their entity always belong to one group.
 - Related variables form a group named with a shared prefix for their entity: `canvasWidth`, `canvasHeight`. A blank line separates groups.
 - A declaration that spans more than one line is separated from adjacent statements by a blank line. A comment directly above a declaration belongs to it. This rule overrides the shared-prefix grouping.
 
@@ -60,7 +60,7 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 ## File structure
 
 - A file contains one class, one enum object, or a group of related functions or constants.
-- Order: imports, local types, module constants, classes and functions, scratch variables, export statement.
+- Order: imports, local types, module constants, side tables ([Module scope](#module-scope)), classes and functions, scratch variables, export statement.
 - Imports form groups separated by one blank line: external modules (`node:`, packages), then other modules of `src`, then files of the same module, then type imports. External modules are ordered alphabetically. Within the other groups, a file follows the files it depends on, and unrelated files are ordered alphabetically. Names inside braces follow the export order of their source, or alphabetical order for external modules. The type group is ordered like the groups above it, external modules first. Test files order their groups as described in [Tests](#tests).
 - Re-exports in `index.ts` form groups separated by one blank line, by the kind of source file, in this order: functions and constants, enum objects, classes, types (`export type`). Within a group, re-exports follow the same order as imports. The export statement of a file lists names in the order of their declarations.
 - An import used only in type positions is written `import type`. A source that provides both runtime values and types appears in both groups. The inline `type` modifier is not used. Runtime imports between files of one module form no cycle: a cycle exposes a class to code that runs before its declaration (TDZ).
@@ -68,7 +68,7 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 - Exports are named and grouped in a single `export { ... };` statement at the end of the file. No `export default` and no inline `export`.
 - A class file exports exactly its class. `types.ts` may export several types.
 - `index.ts` contains only named re-exports: `export { Vector3 } from './vector3.ts';` and `export type { Renderable } from './types.ts';`. `export *` is forbidden.
-- Test, script, and example files have no export statement.
+- Test files, example files, and script entry points have no export statement. A script imports shared code from a file next to it, which is not an entry point.
 
 ```ts
 import type { Matrix4 } from './matrix4.ts';
@@ -85,6 +85,28 @@ class Vector3 {
 const _vector3A = new Vector3();
 
 export { Vector3 };
+```
+
+## Module scope
+
+A module-level binding in `src/` is one of:
+
+- A deeply immutable value, named in CONSTANT_CASE ([Case](#case)).
+- A scratch variable ([Scratch variables](#scratch-variables)).
+- A side table: a `WeakMap` or `WeakSet` keyed by objects, holding private state that several classes of one module share. It is named after the relation it records (`sceneRoots`), is never exported from `index.ts`, and lives in its own file when several files use it.
+
+Any other module-level state is forbidden: caches, counters, registries, GPU resources. State that belongs to an instance of a system (a scene, a renderer, a device) is a field of that instance.
+
+Module-level state is shared by every instance and every test. A side table shares nothing: each entry belongs to its key and is released with it. GPU resources belong to one `GPUDevice`, so a module-level cache would outlive device loss and mix the resources of two renderers.
+
+Scripts and examples are programs: their module scope is their state, and this section does not apply to them.
+
+```ts
+import type { SceneNode } from './scene-node.ts';
+
+const sceneRoots = new WeakSet<SceneNode>();
+
+export { sceneRoots };
 ```
 
 ## Types
@@ -124,9 +146,12 @@ Order:
 3. `#private` fields.
 4. Public fields (math value types only).
 5. Constructor.
-6. Accessors, each getter immediately followed by its setter.
-7. Public methods.
-8. `#private` methods.
+6. Public accessors, each getter immediately followed by its setter.
+7. `#private` accessors.
+8. Public methods.
+9. `#private` methods.
+
+Members are grouped by kind first. A `#private` accessor stays among the accessors, not next to the method that uses it.
 
 - **Fields**: every field of a class that is not a math value type is `#private` and is exposed through accessors ([0007](decisions/0007-runtime-encapsulation.md)). A math value type that stores its components in an array holds the array in a `#private` field exposed through a getter: the components stay public ([0005](decisions/0005-math-conventions.md)), and the array cannot be replaced.
 - **Initialization**: fields are declared without initializers. Instance fields are assigned in the constructor. Static fields are assigned in a static initialization block (`static {}`).
@@ -266,32 +291,36 @@ Only these comments are permitted:
 ### TSDoc
 
 - Required on every export of a module's `index.ts` and on every public member of an exported class. Public fields of math value types are exempt.
-- Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations ([references.md](references.md)). No implementation details.
+- Content: one sentence stating what the declaration does, in plain English, using the standard term of the field ("dot product", "Euclidean length", "linear interpolation"). No formulas, symbols, or notation. No citations ([references.md](references.md)). No implementation details. Outside `src/math`, the reader is assumed to know neither matrices nor the internals of the library: the sentence states what the caller gains, not how it is computed.
 - `@remarks` appears only for a fact the caller must know and the sentence cannot state: the result for degenerate input, mutation of an argument, units, the reason for a `protected` member. One short sentence per fact. A fact the sentence can state, such as the order of elements, goes into the sentence.
 - Register: formal, declarative, third person, present tense. No first or second person, no contractions, no hedging, no filler ("simply", "just", "basically", "note that").
 - Tags carry no types. TypeScript provides them.
 - Methods that return `this` omit `@returns`. The class documentation states this convention once, in a second sentence.
-- `@returns` appears only when the sentence does not state the returned value: "Computes..." and "Creates..." omit it; "Writes..." requires it.
+- `@returns` appears only when the sentence does not state the returned value: "Computes..." and "Creates..." omit it; "Writes..." and "Copies..." require it.
 - Tags: `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, `@deprecated`.
-- Layout: a blank line separates the sentence, the group of `@typeParam`, `@param`, and `@returns` tags, and each other tag.
+- Layout: a blank line separates the sentence, the group of `@typeParam` and `@param` tags, `@returns`, and each other tag.
 
 #### Templates
 
 Declarations of one kind share one template: the verb and the structure come from the table. Synonyms are forbidden: "Computes", never "Calculates", "Gets", "Finds", or "Returns". The receiver is "this \<type\>", an argument is "the given \<noun\>". A term keeps its standard preposition: "the distance between", "the interpolation between". A new kind of declaration adds a row to the table before its first comment is written.
 
-| Declaration                     | Template                                       | Example                                                        |
-| ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------- |
-| Class, interface, type alias    | `A <noun phrase>.`                             | A vector in three-dimensional space.                           |
-| Constructor                     | `Creates <noun phrase> with the given <noun>.` | Creates a vector with the given components.                    |
-| Constructor without parameters  | `Creates <noun phrase>.`                       | Creates an identity matrix.                                    |
-| Value computed without mutation | `Computes the <term> of <operands>.`           | Computes the dot product of this vector and the given vector.  |
-| New instance                    | `Creates a copy of this <type>.`               | Creates a copy of this vector.                                 |
-| Mutation of the receiver        | `Sets this <type> to <result>.`                | Sets this vector to the sum of itself and the given vector.    |
-| Predicate                       | `Determines whether <condition>.`              | Determines whether this vector equals the given vector.        |
-| Output into a target            | `Writes <noun phrase> into the given <noun>.`  | Writes the components of this vector into the given array.     |
-| Assertion                       | `Asserts that <condition>.`                    | Asserts that the given numbers are equal within the tolerance. |
-| Field, constant                 | `The <noun phrase>.`                           | The unit vector along the positive Y axis.                     |
-| Parameter                       | `The <role>.`                                  | The subtrahend.                                                |
+| Declaration                     | Template                                                                             | Example                                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Class, interface, type alias    | `A <noun phrase>.`                                                                   | A vector in three-dimensional space.                                                     |
+| Constructor                     | `Creates <noun phrase> with the given <noun>.`                                       | Creates a vector with the given components.                                              |
+| Constructor without parameters  | `Creates <noun phrase>.`                                                             | Creates an identity matrix.                                                              |
+| Value computed without mutation | `Computes the <term> of <operands>.`                                                 | Computes the dot product of this vector and the given vector.                            |
+| New instance                    | `Creates a copy of this <type>.`                                                     | Creates a copy of this vector.                                                           |
+| Mutation of the receiver        | `Sets this <type> to <result>.`                                                      | Sets this vector to the sum of itself and the given vector.                              |
+| Predicate                       | `Determines whether <condition>.`                                                    | Determines whether this vector equals the given vector.                                  |
+| Output into a target            | `Writes <noun phrase> into the given <noun>.`                                        | Writes the components of this vector into the given array.                               |
+| Copy into a target              | `Copies <noun phrase> into the given <noun>.`                                        | Copies the local matrix of this transform into the given matrix.                         |
+| Change of a collection          | `Appends <noun phrase> to <collection>.`, `Removes <noun phrase> from <collection>.` | Appends the given node to the children of this node.                                     |
+| Iterator                        | `Creates an iterator over <noun phrase>.`                                            | Creates an iterator over the children of this node, in order.                            |
+| Application of current values   | `Applies <noun phrase> to <target>.`                                                 | Applies the current position, rotation, and scale to the local matrix of this transform. |
+| Assertion                       | `Asserts that <condition>.`                                                          | Asserts that the given numbers are equal within the tolerance.                           |
+| Field, constant                 | `The <noun phrase>.`                                                                 | The unit vector along the positive Y axis.                                               |
+| Parameter                       | `The <role>.`                                                                        | The subtrahend.                                                                          |
 
 ```ts
 /**
@@ -372,6 +401,14 @@ Every copyable type uses these names and semantics. `set(x, y, z)` is the `Vecto
 | `equals(other, tolerance = 0)`     | Every component differs by at most `tolerance` (absolute)                 |
 | `notEquals(other, tolerance = 0)`  | Negation of `equals`                                                      |
 | `writeToArray(target, offset = 0)` | Writes components into the provided array, without allocating; returns it |
+
+### Copy and write
+
+The verb names the kind of destination, as in WebGPU (`writeBuffer`, `copyBufferToBuffer`):
+
+- `copy` transfers a value into an instance of its type. `copy(source)` copies into `this`. A method that copies a value of the receiver into a given instance names the value and ends in `To`: `node.copyWorldMatrixTo(target)`.
+- `write` transfers components into an array or typed array. A method that writes a value of the receiver other than itself names the value: `writeWorldMatrixToArray(target, offset = 0)`.
+- Both forms return the target.
 
 ### Operations
 
