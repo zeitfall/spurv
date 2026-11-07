@@ -23,18 +23,20 @@ Format: [Michael Nygard, 2011](https://cognitect.com/blog/2011/11/15/documenting
 
 ## Index
 
-| ADR                                              | Title                                 | Status   |
-| ------------------------------------------------ | ------------------------------------- | -------- |
-| [0001](0001-record-architecture-decisions.md)    | Record architecture decisions         | Accepted |
-| [0002](0002-webgpu-only.md)                      | WebGPU only                           | Accepted |
-| [0003](0003-scene-graph-with-components.md)      | Scene graph with components           | Accepted |
-| [0004](0004-frame-phases.md)                     | Frame phases and render world         | Accepted |
-| [0005](0005-math-conventions.md)                 | Math conventions                      | Accepted |
-| [0006](0006-transform-change-tracking.md)        | Transform change tracking             | Accepted |
-| [0007](0007-runtime-encapsulation.md)            | Runtime encapsulation and inheritance | Accepted |
-| [0008](0008-const-objects-over-enums.md)         | Const objects instead of enums        | Accepted |
-| [0009](0009-toolchain.md)                        | Toolchain                             | Accepted |
-| [0010](0010-module-boundaries-and-layers.md)     | Module boundaries and layers          | Accepted |
-| [0011](0011-colocated-tests.md)                  | Colocated tests                       | Accepted |
-| [0012](0012-examples-via-public-api.md)          | Examples via the public API           | Accepted |
-| [0013](0013-reversed-z-depth.md)                 | Reversed-Z depth                      | Accepted |
+| ADR                                              | Title                                 | Status             |
+| ------------------------------------------------ | ------------------------------------- | ------------------ |
+| [0001](0001-record-architecture-decisions.md)    | Record architecture decisions         | Accepted           |
+| [0002](0002-webgpu-only.md)                      | WebGPU only                           | Accepted           |
+| [0003](0003-scene-graph-with-components.md)      | Scene graph with components           | Accepted           |
+| [0004](0004-frame-phases.md)                     | Frame phases and render world         | Accepted           |
+| [0005](0005-math-conventions.md)                 | Math conventions                      | Accepted           |
+| [0006](0006-transform-change-tracking.md)        | Transform change tracking             | Superseded by 0015 |
+| [0007](0007-runtime-encapsulation.md)            | Runtime encapsulation and inheritance | Accepted           |
+| [0008](0008-const-objects-over-enums.md)         | Const objects instead of enums        | Accepted           |
+| [0009](0009-toolchain.md)                        | Toolchain                             | Accepted           |
+| [0010](0010-module-boundaries-and-layers.md)     | Module boundaries and layers          | Accepted           |
+| [0011](0011-colocated-tests.md)                  | Colocated tests                       | Accepted           |
+| [0012](0012-examples-via-public-api.md)          | Examples via the public API           | Accepted           |
+| [0013](0013-reversed-z-depth.md)                 | Reversed-Z depth                      | Accepted           |
+| [0014](0014-scene-and-scene-nodes.md)            | Scene and scene nodes                 | Accepted           |
+| [0015](0015-transform-versions.md)               | Transform versions                    | Accepted           |

@@ -480,6 +480,7 @@ class Matrix4 {
      *
      * @param target - The destination array.
      * @param offset - The index of the first element.
+     *
      * @returns The given array.
      */
     writeToArray(target: ArrayLike<number>, offset = 0) {
