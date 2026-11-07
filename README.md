@@ -11,12 +11,13 @@ Graphics library based on WebGPU and TypeScript.
 
 ## Scripts
 
-| Command             | Action                                                         |
-| ------------------- | -------------------------------------------------------------- |
-| `npm run dev`       | Serve the examples at `http://localhost:8000` with live reload |
-| `npm run typecheck` | Type-check sources, tests, scripts, and examples               |
-| `npm test`          | Run unit tests (`node:test`)                                   |
-| `npm run build`     | Emit ESM and `.d.ts` to `dist/`                                |
+| Command                 | Action                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run dev`           | Serve the examples at `http://localhost:8000` with live reload                                   |
+| `npm run typecheck`     | Type-check sources, tests, scripts, and examples                                                 |
+| `npm test`              | Run unit tests (`node:test`)                                                                     |
+| `npm run check-imports` | Check module boundaries and layers ([0010](docs/decisions/0010-module-boundaries-and-layers.md)) |
+| `npm run build`         | Emit ESM and `.d.ts` to `dist/`                                                                  |
 
 ## Documentation
 
