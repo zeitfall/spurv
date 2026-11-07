@@ -40,3 +40,4 @@ Format: [Michael Nygard, 2011](https://cognitect.com/blog/2011/11/15/documenting
 | [0013](0013-reversed-z-depth.md)                 | Reversed-Z depth                      | Accepted           |
 | [0014](0014-scene-and-scene-nodes.md)            | Scene and scene nodes                 | Accepted           |
 | [0015](0015-transform-versions.md)               | Transform versions                    | Accepted           |
+| [0016](0016-examples-on-github-pages.md)         | Examples on GitHub Pages              | Accepted           |

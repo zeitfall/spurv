@@ -33,6 +33,7 @@
     "dev": "node scripts/dev-server.ts",
     "typecheck": "tsc",
     "build": "tsc -p tsconfig.build.json",
+    "build:site": "npm run build && node scripts/build-site.ts",
     "test": "node --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
     "check-imports": "node scripts/check-imports.ts"
   },

@@ -1,8 +1,10 @@
 import { watch } from 'node:fs';
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { stripTypeScriptTypes } from 'node:module';
 import { extname, join, relative, resolve, sep } from 'node:path';
+
+import { listExampleNames, createExampleIndex } from './example-index.ts';
 
 import type { Stats } from 'node:fs';
 import type { IncomingMessage, ServerResponse } from 'node:http';
@@ -87,22 +89,8 @@ function openReloadStream(response: ServerResponse) {
 }
 
 async function sendExampleIndex(response: ServerResponse) {
-    const entries = await readdir(join(ROOT_DIRECTORY, 'examples'), { withFileTypes: true });
-
-    const exampleNames = entries
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => entry.name)
-        .sort();
-
-    const exampleLinks = exampleNames.map((name) => `<li><a href="/examples/${name}/">${name}</a></li>`);
-
-    const html = [
-        '<!doctype html>',
-        '<html lang="en">',
-        '<head><meta charset="utf-8"><title>spurv examples</title></head>',
-        `<body><h1>spurv examples</h1><ul>${exampleLinks.join('')}</ul></body>`,
-        '</html>',
-    ].join('\n');
+    const exampleNames = await listExampleNames(join(ROOT_DIRECTORY, 'examples'));
+    const html = createExampleIndex(exampleNames, '/examples/');
 
     sendBody(response, CONTENT_TYPES['.html'], injectReloadScript(html));
 }
