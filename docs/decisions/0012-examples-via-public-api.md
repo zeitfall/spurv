@@ -1,6 +1,6 @@
 # 0012. Examples via the public API
 
-- Status: Accepted
+- Status: Superseded by 0017
 - Date: 2026-10-27
 
 ## Context

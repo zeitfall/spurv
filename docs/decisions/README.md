@@ -45,11 +45,12 @@ Each section is written in connected prose under the documentation rules of [CON
 | [0006](0006-transform-change-tracking.md)     | Transform change tracking             | Superseded by 0015 |
 | [0007](0007-runtime-encapsulation.md)         | Runtime encapsulation and inheritance | Accepted           |
 | [0008](0008-const-objects-over-enums.md)      | Const objects instead of enums        | Accepted           |
-| [0009](0009-toolchain.md)                     | Toolchain                             | Accepted           |
+| [0009](0009-toolchain.md)                     | Toolchain                             | Superseded by 0017 |
 | [0010](0010-module-boundaries-and-layers.md)  | Module boundaries and layers          | Accepted           |
 | [0011](0011-colocated-tests.md)               | Colocated tests                       | Accepted           |
-| [0012](0012-examples-via-public-api.md)       | Examples via the public API           | Accepted           |
+| [0012](0012-examples-via-public-api.md)       | Examples via the public API           | Superseded by 0017 |
 | [0013](0013-reversed-z-depth.md)              | Reversed-Z depth                      | Accepted           |
 | [0014](0014-scene-and-scene-nodes.md)         | Scene and scene nodes                 | Accepted           |
 | [0015](0015-transform-versions.md)            | Transform versions                    | Accepted           |
-| [0016](0016-examples-on-github-pages.md)      | Examples on GitHub Pages              | Accepted           |
+| [0016](0016-examples-on-github-pages.md)      | Examples on GitHub Pages              | Superseded by 0017 |
+| [0017](0017-toolchain-and-examples.md)        | Toolchain and examples                | Accepted           |

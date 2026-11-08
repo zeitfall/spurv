@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["@webgpu/types"],
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "dist/library",
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,

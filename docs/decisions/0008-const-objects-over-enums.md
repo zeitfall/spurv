@@ -5,7 +5,7 @@
 
 ## Context
 
-- TS `enum` emits runtime code and is incompatible with type stripping ([0009](0009-toolchain.md)).
+- TS `enum` emits runtime code and is incompatible with type stripping ([0017](0017-toolchain-and-examples.md)).
 - String enums are nominal: a literal `'ADDITIVE'` is not assignable to `BlendMode.ADDITIVE`, which is hostile to plain-JS consumers.
 - Numeric enums produce reverse mappings, so `Object.keys` yields both names and numbers.
 - `const enum` breaks under isolated transpilation and in published `.d.ts` files.

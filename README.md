@@ -11,14 +11,15 @@ Graphics library based on WebGPU and TypeScript.
 
 ## Scripts
 
-| Command                 | Action                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------ |
-| `npm run dev`           | Serve the examples at `http://localhost:8000` with live reload                                   |
-| `npm run typecheck`     | Type-check sources, tests, scripts, and examples                                                 |
-| `npm test`              | Run unit tests (`node:test`)                                                                     |
-| `npm run check-imports` | Check module boundaries and layers ([0010](docs/decisions/0010-module-boundaries-and-layers.md)) |
-| `npm run build`         | Emit ESM and `.d.ts` to `dist/`                                                                  |
-| `npm run build:site`    | Build the examples site in `site/` ([0016](docs/decisions/0016-examples-on-github-pages.md))     |
+| Command                    | Action                                                                                                                 |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `npm run build:library`    | Emit ESM and `.d.ts` to `dist/library/`                                                                                |
+| `npm run check:types`      | Type-check sources, tests, scripts, examples, and the Vite configuration                                               |
+| `npm run check:imports`    | Check module boundaries and layers ([0010](docs/decisions/0010-module-boundaries-and-layers.md))                       |
+| `npm test`                 | Run unit tests (`node:test`)                                                                                           |
+| `npm run dev:examples`     | Serve the examples at `http://localhost:5173` with live reload ([0017](docs/decisions/0017-toolchain-and-examples.md)) |
+| `npm run build:examples`   | Build the examples to `dist/examples/` ([0017](docs/decisions/0017-toolchain-and-examples.md))                         |
+| `npm run preview:examples` | Serve the built examples from `dist/examples/` at `http://localhost:4173`                                              |
 
 ## Documentation
 
