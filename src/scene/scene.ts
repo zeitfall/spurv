@@ -2,7 +2,7 @@ import { SceneNode } from './scene-node.ts';
 import { sceneRoots } from './scene-roots.ts';
 
 /**
- * A set of nodes organized under a single root node.
+ * A hierarchy of nodes that descend from a single root node.
  */
 class Scene {
     #root: SceneNode;
@@ -17,14 +17,14 @@ class Scene {
     }
 
     /**
-     * The node that holds all other nodes of this scene.
+     * The node of which every other node in this scene is a descendant.
      */
     get root() {
         return this.#root;
     }
 
     /**
-     * Applies the changes made to the nodes of this scene.
+     * Updates the world matrices of all nodes in this scene.
      */
     update() {
         this.#root.updateSubtree();

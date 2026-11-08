@@ -4,7 +4,7 @@ import { sceneRoots } from './scene-roots.ts';
 import { Transform } from './transform.ts';
 
 /**
- * An object in a scene, placed relative to its parent node and able to hold child nodes.
+ * A node of a scene hierarchy, positioned relative to its parent and holding an ordered list of children.
  *
  * Methods that add or remove children return this node.
  */
@@ -35,7 +35,7 @@ class SceneNode {
     }
 
     /**
-     * The parent node, or null for a node without a parent.
+     * The node that contains this node, or null if this node is detached.
      */
     get parent() {
         return this.#parent;
@@ -49,7 +49,9 @@ class SceneNode {
     }
 
     /**
-     * The number of times the world matrix has changed.
+     * The counter that increases each time the world matrix of this node changes.
+     *
+     * @remarks Two readings that differ indicate a change, so the matrices need not be compared.
      */
     get worldMatrixVersion() {
         return this.#worldMatrixVersion;
@@ -60,11 +62,13 @@ class SceneNode {
     /**
      * Appends the given node to the children of this node.
      *
-     * @param child - The appended node.
+     * @param child - The node to append.
      *
-     * @throws RangeError if the given node is this node, an ancestor of this node, or the root of a scene.
+     * @throws RangeError if the given node is this node, an ancestor of this node, or the root of a
+     * scene.
      *
-     * @remarks A node that already has a parent leaves it, and a child of this node moves to the end.
+     * @remarks If the given node already has a parent, it is first removed from that parent, so a node
+     * that is already a child of this node moves to the end.
      */
     addChild(child: SceneNode) {
         if (sceneRoots.has(child)) {
@@ -96,7 +100,7 @@ class SceneNode {
     /**
      * Removes the given node from the children of this node.
      *
-     * @param child - The removed node.
+     * @param child - The node to remove.
      *
      * @throws RangeError if the given node is not a child of this node.
      */
@@ -116,9 +120,10 @@ class SceneNode {
     }
 
     /**
-     * Creates an iterator over the children of this node, in order.
+     * Creates an iterator over the children of this node, in the order of their appending.
      *
-     * @remarks Changing the children during the iteration skips or repeats nodes.
+     * @remarks Adding or removing children during the iteration can cause nodes to be skipped or
+     * repeated.
      */
     children() {
         return this.#children.values();
@@ -127,9 +132,9 @@ class SceneNode {
     // Transforms -------------------------------------------------------------
 
     /**
-     * Applies the current transforms of this node and its ancestors to the world matrix of this node.
+     * Updates the world matrix of this node from its own transform and the transforms of its ancestors.
      *
-     * @remarks The descendants of this node are not updated.
+     * @remarks The world matrices of the descendants remain unchanged.
      */
     updateWorldMatrix() {
         if (this.#parent !== null) {
@@ -146,7 +151,8 @@ class SceneNode {
      *
      * @returns The given matrix.
      *
-     * @remarks The copy does not include changes made after the last world matrix update.
+     * @remarks The world matrix is recomputed only by an update, so changes to the transforms made
+     * since the last update are not reflected.
      */
     copyWorldMatrixTo(target: Matrix4) {
         return target.copy(this.#worldMatrix);
@@ -160,14 +166,15 @@ class SceneNode {
      *
      * @returns The given array.
      *
-     * @remarks The array does not include changes made after the last world matrix update.
+     * @remarks The world matrix is recomputed only by an update, so changes to the transforms made
+     * since the last update are not reflected.
      */
-    writeWorldMatrixToArray(target: ArrayLike<number>, offset: number) {
+    writeWorldMatrixToArray(target: ArrayLike<number>, offset = 0) {
         return this.#worldMatrix.writeToArray(target, offset);
     }
 
     /**
-     * Applies the current transforms to the world matrices of this node and all its descendants.
+     * Updates the world matrices of this node and all of its descendants.
      */
     updateSubtree() {
         this.updateWorldMatrix();
