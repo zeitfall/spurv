@@ -19,9 +19,19 @@ An Accepted ADR builds only on decisions that are themselves Accepted, although 
 - Date: YYYY-MM-DD
 
 ## Context
+
+The forces that make a decision necessary, stated as connected sentences.
+
 ## Decision
+
+The decision itself, together with the reasoning that links it to the context.
+
 ## Consequences
+
+The effects of the decision, both favorable and unfavorable.
 ```
+
+Each section is written in connected prose under the documentation rules of [CONTRIBUTING.md](../../CONTRIBUTING.md#documentation). A sentence states a fact or a reason in full, so a bare fragment such as "Mutable classes." is expanded into a statement of what is decided and why. Conjunctions carry the reasoning from one sentence to the next. A list is used only when its items are genuinely parallel and independent, as alternatives under comparison or unrelated consequences often are, and even then each item is a complete sentence.
 
 ## Index
 
