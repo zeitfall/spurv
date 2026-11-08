@@ -9,7 +9,7 @@ Architectural reasoning is lost if it lives only in code, commits, or chat histo
 
 ## Decision
 
-Record architectural decisions as ADRs in `docs/decisions/`. When an ADR is required, its format, and its lifecycle are defined in [README.md](README.md).
+Record architectural decisions as ADRs in `docs/decisions/`. The conditions under which an ADR is required, its format, and its lifecycle are defined in [README.md](README.md).
 
 ## Consequences
 

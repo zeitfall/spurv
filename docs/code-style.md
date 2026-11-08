@@ -44,7 +44,7 @@ Blank lines make the structure of a function visible, and the rules below decide
 1. One blank line separates logical blocks, and two consecutive blank lines never appear.
 2. A blank line follows a group of declarations, precedes `return`, and surrounds every control-flow statement (`if`, `for`, `while`, `do`, `switch`, `try`).
 3. Related variables form a group, and the variables of a group share a prefix that names their entity, such as `canvasWidth` and `canvasHeight`. A blank line separates one group from the next. The same applies to the fields of a class: they are grouped by the responsibility they serve, and fields that share a prefix always belong to the same group.
-4. A declaration that spans more than one line is set apart from its neighbours by blank lines, even inside a group. A comment directly above a declaration belongs to it.
+4. A declaration that spans more than one line is set apart from its neighbors by blank lines, even inside a group. A comment directly above a declaration belongs to it.
 5. A blank line never directly follows an opening brace or directly precedes a closing brace.
 
 Within a class, the constructor, accessors, and methods are separated from one another by one blank line, while fields follow the grouping of rule 3.
