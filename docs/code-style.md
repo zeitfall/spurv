@@ -141,7 +141,7 @@ There is no global directory of types.
 
 ### Annotations
 
-Return types are inferred and are annotated in three cases only: on abstract members; where the compiler requires an annotation because of recursion; and to narrow a frozen or newly created value to a read-only type such as `Readonly<T>`, `ReadonlyMap<K, V>`, `ReadonlySet<T>`, or `readonly T[]`. A read-only annotation never substitutes for runtime protection, which is why internal collections are never returned ([0007](decisions/0007-runtime-encapsulation.md)).
+Return types are inferred and are annotated in three cases only: on abstract members; where the compiler requires an annotation because of recursion; and to narrow a frozen or newly created value to a read-only type such as `Readonly<T>`, `ReadonlyMap<K, V>`, `ReadonlySet<T>`, or `readonly T[]`. A read-only annotation never substitutes for runtime protection, which is why internal collections are never returned ([0018](decisions/0018-encapsulation-and-inheritance.md)).
 
 An `interface` describes object shapes and class contracts. A `type` alias is used only for what an interface cannot express, namely unions, tuples, function types, mapped types, and conditional types.
 
@@ -173,13 +173,13 @@ Members are grouped by kind before anything else, so a `#private` accessor stays
 
 ### Fields and initialization
 
-Every field of a class that is not a value type is `#private` and is exposed through accessors ([0007](decisions/0007-runtime-encapsulation.md)). A value type that stores its components in an array keeps the array in a `#private` field behind a getter, so that the components remain public while the array itself cannot be replaced.
+Every field of a class that is not a value type is `#private` and is exposed through accessors ([0018](decisions/0018-encapsulation-and-inheritance.md)). A value type that stores its components in an array keeps the array in a `#private` field behind a getter, so that the components remain public while the array itself cannot be replaced.
 
 Fields are declared without initializers. Instance fields are assigned in the constructor, and static fields in a static initialization block (`static {}`). A constructor never calls a public or `protected` method of `this`, because the fields of a subclass have not yet been assigned while the base constructor runs.
 
 A static constant is deeply immutable. It is held in a `static #` field that contains an `Object.freeze`d instance, is assigned in `static {}`, and is exposed through a getter named in CONSTANT_CASE. A type whose storage cannot be frozen, such as a typed array, has no static constants.
 
-A `protected` member states the reason for this exception in a TSDoc `@remarks` tag ([0007](decisions/0007-runtime-encapsulation.md)).
+A `protected` member states the reason for this exception in a TSDoc `@remarks` tag ([0018](decisions/0018-encapsulation-and-inheritance.md)).
 
 ### Method order
 

@@ -1,6 +1,6 @@
 # 0007. Runtime encapsulation and inheritance
 
-- Status: Accepted
+- Status: Superseded by 0018
 - Date: 2026-10-27
 
 ## Context
