@@ -1,8 +1,7 @@
 # Plans
 
-A plan is the checklist of one module for the current milestone: `docs/plans/<module>.md`.
+A plan is the checklist of one module for the current milestone, stored in `docs/plans/<module>.md`. It states the goal, an ordered checklist, the items that are out of scope, and the open questions. A plan holds no rationale, which belongs in an ADR, in the code style, or in the API conventions.
 
-- Content: goal, ordered checklist, out-of-scope items, open questions. Rationale belongs in ADRs or `code-style.md`, not in a plan.
-- An item is checked after it is implemented (by the author for a key subsystem, by the assistant otherwise), tested by the assistant, and reviewed by both.
-- A resolved open question moves to the checklist, an ADR, or `code-style.md`.
-- A plan is deleted when every item is checked. Git history preserves it.
+An item is checked once it has been implemented, tested, and reviewed by both the author and the assistant; who implements and who tests is defined in [CLAUDE.md](../../CLAUDE.md#assistant). When an open question is resolved, the answer moves to the checklist, to an ADR, or to one of the convention documents.
+
+A plan is deleted as soon as every item is checked, since the git history preserves it.

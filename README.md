@@ -22,10 +22,13 @@ Graphics library based on WebGPU and TypeScript.
 
 ## Documentation
 
-- [Architecture](docs/architecture.md)
-- [Architecture decisions](docs/decisions/README.md)
-- [Code style](docs/code-style.md)
-- [Contributing](CONTRIBUTING.md)
+- [Contributing](CONTRIBUTING.md) describes the git workflow, the commit convention, and the rules for documentation.
+- [Code style](docs/code-style.md) defines how code is formatted, structured, named, commented, and tested.
+- [API conventions](docs/api-conventions.md) define the naming and semantics of the public API of the library.
+- [Architecture](docs/architecture.md) describes the current modules and layers, the milestones, and the open questions.
+- [Architecture decisions](docs/decisions/README.md) record each significant decision together with its rationale.
+- [Plans](docs/plans/README.md) hold the checklists of the modules in progress.
+- [References](docs/references.md) list the external sources and the terms on which they may be used.
 
 ## License
 

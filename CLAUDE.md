@@ -4,20 +4,21 @@ Graphics library based on WebGPU and TypeScript.
 
 ## Map
 
-- `README.md`: requirements and commands (typecheck, test, build).
-- `CONTRIBUTING.md`: git workflow, commit convention, documentation rules. Read before any change.
-- `docs/code-style.md`: all code rules. Follow them in every file.
-- `docs/architecture.md`: modules, layers, milestones, open questions.
-- `docs/decisions/`: ADRs, indexed in `README.md` there. Read the relevant ADR before changing a subsystem.
-- `docs/plans/`: checklists of modules in progress; rules in `README.md` there. Read the relevant plan before working on a module.
-- `docs/references.md`: external sources and how they may be used. Read before proposing any API or design.
+- `README.md` lists the requirements, the commands, and the role of every document.
+- `CONTRIBUTING.md` describes the git workflow, the commit convention, and the documentation rules. It is read before any change.
+- `docs/code-style.md` defines the rules that every file of code follows.
+- `docs/api-conventions.md` defines the naming and semantics of the public API, and is read before a public member is added or changed.
+- `docs/architecture.md` describes the modules, layers, milestones, and open questions.
+- `docs/decisions/` contains the ADRs, indexed in its `README.md`. The relevant ADR is read before a subsystem is changed.
+- `docs/plans/` contains the checklists of the modules in progress, under the rules of its `README.md`. The relevant plan is read before work on a module begins.
+- `docs/references.md` lists the external sources and how they may be used. It is read before any API or design is proposed.
 
 ## Assistant
 
-- Key subsystems: `math`, `gpu`, `scene`, `renderer`, and shaders. The author writes them. The assistant explains and reviews them, and implements one only when asked.
-- The assistant writes all other code. When it is unclear whether a part is a key subsystem, the assistant asks the author first.
-- The assistant writes all tests and every comment in the repository, including in code the author writes.
-- The assistant runs only read-only `git` and `gh` commands. It runs a command that changes the repository or the remote (commit, push, merge, PR) only when the author explicitly asks it to run that command.
-- When the author ends a work session or asks to commit, the assistant proposes a git plan for the author to run: the commands in order, files staged by explicit path, the commit message or PR title and body per [CONTRIBUTING.md](CONTRIBUTING.md#commit-convention), and a one-line explanation of each command.
-- Commits and PRs carry no assistant attribution.
-- Chat replies contain no mathematical symbols or arrows: notation is written in words or ASCII ([CONTRIBUTING.md](CONTRIBUTING.md#documentation)). The language of the reply is not restricted.
+- The key subsystems are `math`, `gpu`, `scene`, `renderer`, and the shaders. The author writes them, while the assistant explains and reviews them and implements one only when asked to.
+- The assistant writes all other code. When it is unclear whether a part belongs to a key subsystem, the assistant asks the author before writing it.
+- The assistant writes all tests and every comment in the repository, including the comments in code that the author writes.
+- The assistant runs only read-only `git` and `gh` commands. A command that changes the repository or the remote, such as a commit, push, merge, or pull request, is run only when the author explicitly asks for that command.
+- When the author ends a work session or asks to commit, the assistant proposes a git plan for the author to run. The plan lists the commands in order, stages files by explicit path, gives the commit message or the PR title and body according to [CONTRIBUTING.md](CONTRIBUTING.md#commit-convention), and explains each command in one line.
+- Commits and pull requests carry no assistant attribution.
+- Chat replies contain no mathematical symbols or arrows; notation is written in words or in ASCII, as [CONTRIBUTING.md](CONTRIBUTING.md#documentation) prescribes. The language of a reply is not restricted.
