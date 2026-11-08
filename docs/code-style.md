@@ -327,6 +327,7 @@ All declarations of one kind share a template, which fixes the verb and the stru
 | Copy into a target              | `Copies <noun phrase> into the given <noun>.`                                        | Copies the reduced form of this fraction into the given fraction.           |
 | Change of a collection          | `Appends <noun phrase> to <collection>.`, `Removes <noun phrase> from <collection>.` | Appends the given task to the end of this queue.                            |
 | Iterator                        | `Creates an iterator over <noun phrase>.`                                            | Creates an iterator over the tasks of this queue, in order.                 |
+| Lookup                          | `Looks up <noun phrase>.`                                                            | Looks up the task of this queue with the given name.                        |
 | Update of derived state         | `Updates <target> from <source>.`                                                    | Updates the layout of this panel from its current settings.                 |
 | Assertion                       | `Asserts that <condition>.`                                                          | Asserts that the given numbers are equal within the tolerance.              |
 | Field, constant                 | `The <noun phrase>.`                                                                 | The fraction equal to zero.                                                 |

@@ -1,16 +1,21 @@
 import { Matrix4 } from '../math/index.ts';
 
+import { sceneComponentNodes } from './scene-component-nodes.ts';
 import { sceneRoots } from './scene-roots.ts';
 import { Transform } from './transform.ts';
+
+import type { SceneComponent } from './scene-component.ts';
 
 /**
  * A node of a scene hierarchy, positioned relative to its parent and holding an ordered list of children.
  *
- * Methods that add or remove children return this node.
+ * Methods that add or remove children or components return this node.
  */
 class SceneNode {
     #parent: SceneNode | null;
     #children: SceneNode[];
+
+    #components: Map<Function, SceneComponent>;
 
     #transform: Transform;
     #worldMatrix: Matrix4;
@@ -25,6 +30,8 @@ class SceneNode {
     constructor() {
         this.#parent = null;
         this.#children = [];
+
+        this.#components = new Map();
 
         this.#transform = new Transform();
         this.#worldMatrix = new Matrix4();
@@ -127,6 +134,78 @@ class SceneNode {
      */
     children() {
         return this.#children.values();
+    }
+
+    // Components -------------------------------------------------------------
+
+    /**
+     * Appends the given component to this node.
+     *
+     * @param component - The component to append.
+     *
+     * @throws RangeError if the given component is attached to another node, or if this node already
+     * holds a component of the same class.
+     */
+    addComponent(component: SceneComponent) {
+        const componentNode = component.node;
+
+        if (componentNode !== null && componentNode !== this) {
+            throw new RangeError('SceneNode.addComponent: expected a component that is not attached to another node, received a component attached to another node.');
+        }
+
+        const componentAlreadyExists = this.#components.has(component.constructor);
+
+        if (componentAlreadyExists) {
+            throw new RangeError('SceneNode.addComponent: expected a component of a class that this node does not hold, received a component of a class that it holds.');
+        }
+
+        sceneComponentNodes.set(component, this);
+        this.#components.set(component.constructor, component);
+
+        return this;
+    }
+
+    /**
+     * Removes the given component from this node.
+     *
+     * @param component - The component to remove.
+     *
+     * @throws RangeError if the given component is not attached to this node.
+     */
+    removeComponent(component: SceneComponent) {
+        const componentNode = component.node;
+
+        if (componentNode !== this) {
+            throw new RangeError('SceneNode.removeComponent: expected a component of this node, received a component that is not attached to it.');
+        }
+
+        sceneComponentNodes.delete(component);
+        this.#components.delete(component.constructor);
+
+        return this;
+    }
+
+    /**
+     * Looks up the component of this node that has exactly the given class.
+     *
+     * @typeParam T - The type of the component.
+     *
+     * @param componentClass - The class to look up.
+     *
+     * @returns The component, or null if this node holds no component of the given class.
+     */
+    getComponent<T extends SceneComponent>(componentClass: new (...args: never[]) => T) {
+        return (this.#components.get(componentClass) ?? null) as T | null;
+    }
+
+    /**
+     * Creates an iterator over the components of this node, in the order of their appending.
+     *
+     * @remarks Adding or removing components during the iteration can cause components to be skipped or
+     * repeated.
+     */
+    components() {
+        return this.#components.values();
     }
 
     // Transforms -------------------------------------------------------------
