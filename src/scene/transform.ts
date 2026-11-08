@@ -1,7 +1,7 @@
 import { Vector3, Quaternion, Matrix4 } from '../math/index.ts';
 
 /**
- * The position, rotation, and scale of a scene node relative to its parent.
+ * A placement of a scene node relative to its parent, composed of a position, a rotation, and a scale.
  */
 class Transform {
     #position: Vector3;
@@ -15,7 +15,7 @@ class Transform {
     #snapshotScale: Vector3;
 
     /**
-     * Creates a transform with zero position, no rotation, and a scale of one.
+     * Creates a transform that places its node at the origin of the parent, without rotation or scaling.
      */
     constructor() {
         this.#position = new Vector3();
@@ -30,9 +30,9 @@ class Transform {
     }
 
     /**
-     * The position relative to the parent node, in meters.
+     * The position relative to the parent node.
      *
-     * @remarks Changes take effect at the next update of the scene.
+     * @remarks The position is in meters. Changes take effect at the next update of the world matrix.
      */
     get position() {
         return this.#position;
@@ -41,7 +41,7 @@ class Transform {
     /**
      * The rotation relative to the parent node.
      *
-     * @remarks Changes take effect at the next update of the scene.
+     * @remarks Changes take effect at the next update of the world matrix.
      */
     get rotation() {
         return this.#rotation;
@@ -50,21 +50,23 @@ class Transform {
     /**
      * The scale factors along the X, Y, and Z axes relative to the parent node.
      *
-     * @remarks Changes take effect at the next update of the scene.
+     * @remarks Changes take effect at the next update of the world matrix.
      */
     get scale() {
         return this.#scale;
     }
 
     /**
-     * The number of times the local matrix has changed.
+     * The counter that increases each time the local matrix of this transform changes.
+     *
+     * @remarks Two readings that differ indicate a change, so the matrices need not be compared.
      */
     get localMatrixVersion() {
         return this.#localMatrixVersion;
     }
 
     /**
-     * Applies the current position, rotation, and scale to the local matrix of this transform.
+     * Updates the local matrix of this transform from its position, rotation, and scale.
      */
     updateLocalMatrix() {
         const positionHasChanged = this.#position.notEquals(this.#snapshotPosition);
@@ -88,7 +90,8 @@ class Transform {
      *
      * @returns The given matrix.
      *
-     * @remarks The copy does not include changes made after the last local matrix update.
+     * @remarks The local matrix is recomputed only by an update, so changes to the position, rotation,
+     * or scale made since the last update are not reflected.
      */
     copyLocalMatrixTo(target: Matrix4) {
         return target.copy(this.#localMatrix);

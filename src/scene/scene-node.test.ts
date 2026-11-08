@@ -394,6 +394,19 @@ describe('SceneNode', () => {
             assert.deepEqual(Array.from(target), expectedArray);
         });
 
+        it('writes the world matrix at index 0 when the offset is omitted', () => {
+            const node = new SceneNode();
+            const target = new Float32Array(16);
+
+            node.transform.position.set(1, 2, 3);
+            node.updateWorldMatrix();
+            node.writeWorldMatrixToArray(target);
+
+            const expectedArray = createTranslation(1, 2, 3).writeToArray([]);
+
+            assert.deepEqual(Array.from(target), expectedArray);
+        });
+
         it('returns the given array', () => {
             const node = new SceneNode();
             const target = new Float32Array(16);
