@@ -1,41 +1,37 @@
 # Architecture
 
-This is a living document of the current structure. The rationale for each decision is in [decisions/](decisions/README.md).
+This document describes the current structure of the library and changes as the library grows. The rationale behind each decision is recorded in the [ADRs](decisions/README.md).
 
 ## Modules and layers
 
-The rules are defined in [0010](decisions/0010-module-boundaries-and-layers.md). Rows are added as modules are created.
+The rules for modules and layers are defined in [0010](decisions/0010-module-boundaries-and-layers.md), and a row is added to the table whenever a module is created.
 
-| Layer | Module   | Responsibility                    | Status  |
-| ----- | -------- | --------------------------------- | ------- |
-| 0     | `math`   | Vectors, quaternions, matrices    | Created |
-| 1     | `scene`  | Scene hierarchy and transforms    | Created |
+| Layer | Module  | Responsibility                 | Status  |
+| ----- | ------- | ------------------------------ | ------- |
+| 0     | `math`  | Vectors, quaternions, matrices | Created |
+| 1     | `scene` | Scene hierarchy and transforms | Created |
 
-Planned: `gpu` (layer 0), `geometry`, `materials`, `cameras`, `lights` (2), `renderer` (3). Shaders live in `renderer`.
+The planned modules are `gpu` in layer 0; `geometry`, `materials`, `cameras`, and `lights` in layer 2; and `renderer` in layer 3, which will also contain the shaders.
 
-Outside the layers:
-
-- `src/testing`: test-only helpers.
-- `scripts/`: development tooling.
-- `examples/`: one example per milestone.
+Three areas of the repository lie outside the layers: `src/testing` holds helpers used only by tests, `scripts/` holds the development tooling, and `examples/` holds one example per milestone.
 
 ## Milestones
 
-A milestone is a vertical slice that ends in a runnable example in `examples/`.
+A milestone is a vertical slice of the library that ends in a runnable example in `examples/`.
 
-| #   | Example        | Scope                                                                                       |
-| --- | -------------- | ------------------------------------------------------------------------------------------- |
-| 1   | `01-cube`      | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`.           |
-| 2   | `02-hierarchy` | A hierarchy of cubes and a camera node. `scene`; raw WebGPU; import checks; CI, added last. |
+| # | Example        | Scope                                                                                       |
+| - | -------------- | ------------------------------------------------------------------------------------------- |
+| 1 | `01-cube`      | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`.           |
+| 2 | `02-hierarchy` | A hierarchy of cubes and a camera node. `scene`; raw WebGPU; import checks; CI, added last. |
 
-Until `renderer` exists, an example calls WebGPU directly. The WebGPU restriction of [0010](decisions/0010-module-boundaries-and-layers.md) applies to `src/`.
+Until `renderer` exists, an example calls WebGPU directly, since the WebGPU restriction of [0010](decisions/0010-module-boundaries-and-layers.md) applies only to `src/`.
 
 ## Open questions
 
-Questions confined to one module are kept in its plan.
+This table lists the questions that span several modules; a question confined to one module is kept in the plan of that module.
 
-| Topic                | Question                                                                                          | Resolved in      |
-| -------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
-| Scene components     | Are several components of one type allowed? How are components found?                            | First components |
-| Device loss          | Automatic recovery or notification only                                                           | `renderer` design |
-| Shader conventions   | WGSL naming and composition                                                                       | Shader design    |
+| Topic              | Question                                                              | Resolved in                   |
+| ------------------ | --------------------------------------------------------------------- | ----------------------------- |
+| Scene components   | Are several components of one type allowed? How are components found? | Design of the first component |
+| Device loss        | Automatic recovery or notification only                               | `renderer` design             |
+| Shader conventions | WGSL naming and composition                                           | Shader design                 |
