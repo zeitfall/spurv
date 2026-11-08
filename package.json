@@ -21,21 +21,22 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/library/index.d.ts",
+      "default": "./dist/library/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist/library"
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "node scripts/dev-server.ts",
-    "typecheck": "tsc",
-    "build": "tsc -p tsconfig.build.json",
-    "build:site": "npm run build && node scripts/build-site.ts",
+    "build:library": "tsc -p tsconfig.build.json",
+    "check:types": "tsc",
+    "check:imports": "node scripts/check-imports.ts",
     "test": "node --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
-    "check-imports": "node scripts/check-imports.ts"
+    "dev:examples": "vite",
+    "build:examples": "vite build",
+    "preview:examples": "vite preview"
   },
   "devEngines": {
     "runtime": {
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
   }
 }

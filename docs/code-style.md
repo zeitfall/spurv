@@ -88,7 +88,7 @@ With the exception of `index.ts`, a file exports its names through a single `exp
 
 An `index.ts` file contains nothing but named re-exports, such as `export { ClassA } from './class-a.ts';` and `export type { InterfaceA } from './types.ts';`; `export *` is forbidden. The re-exports form groups separated by one blank line according to the kind of source file, in this order: functions and constants, enum objects, classes, and types. Within each group they follow the ordering rules for imports.
 
-Test files, example files, and script entry points have no export statement at all. When several scripts share code, that code lives in a separate file next to them, which is not itself an entry point.
+Test files, example files, and script entry points have no export statement at all. When several scripts share code, that code lives in a separate file next to them, which is not itself an entry point. A configuration file that a tool loads through its default export is the one exception to the rule against default exports: it declares the configuration as a constant and exports it in the final statement as `export { configA as default };`.
 
 ```ts
 import type { ClassB } from './class-b.ts';

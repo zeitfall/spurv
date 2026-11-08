@@ -1,6 +1,6 @@
 # 0016. Examples on GitHub Pages
 
-- Status: Accepted
+- Status: Superseded by 0017
 - Date: 2026-11-08
 
 ## Context
