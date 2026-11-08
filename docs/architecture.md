@@ -19,10 +19,16 @@ Three areas of the repository lie outside the layers: `src/testing` holds helper
 
 A milestone is a vertical slice of the library that ends in a runnable example in `examples/`.
 
-| # | Example        | Scope                                                                                       |
-| - | -------------- | ------------------------------------------------------------------------------------------- |
-| 1 | `01-cube`      | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`.           |
-| 2 | `02-hierarchy` | A hierarchy of cubes and a camera node. `scene`; raw WebGPU; import checks; CI, added last. |
+| # | Example              | Scope                                                                                                                  | Status  |
+| - | -------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1 | `01-cube`            | A rotating cube. `math` only; raw WebGPU; view and projection as plain `Matrix4`.                                      | Done    |
+| 2 | `02-hierarchy`       | A hierarchy of cubes and a camera node. `scene`; raw WebGPU; import checks; CI, added last.                            | Done    |
+| 3 | `03-renderer`        | The scene of `02-hierarchy` through the public API. `gpu`, `renderer`, components, `cameras`, `geometry`, `materials`. | Planned |
+| 4 | `04-camera-controls` | Keyboard and pointer input, orbit and fly camera controllers.                                                          | Planned |
+| 5 | `05-lighting`        | `lights` and lit materials.                                                                                            | Planned |
+| 6 | `06-assets`          | Textures and model loading from glTF.                                                                                  | Planned |
+
+Shadows, a frame graph, culling, and instancing follow these milestones and are not yet scheduled.
 
 Until `renderer` exists, an example calls WebGPU directly, since the WebGPU restriction of [0010](decisions/0010-module-boundaries-and-layers.md) applies only to `src/`.
 
@@ -32,6 +38,8 @@ This table lists the questions that span several modules; a question confined to
 
 | Topic              | Question                                                              | Resolved in                   |
 | ------------------ | --------------------------------------------------------------------- | ----------------------------- |
-| Scene components   | Are several components of one type allowed? How are components found? | Design of the first component |
 | Device loss        | Automatic recovery or notification only                               | `renderer` design             |
 | Shader conventions | WGSL naming and composition                                           | Shader design                 |
+| Frame loop         | Which object owns the frame loop and measures the frame time          | `renderer` design             |
+| Input              | Which modules and layers hold input and camera controllers            | ADR of milestone 4            |
+| Asset loading      | Which module holds the texture and model loaders                      | ADR of milestone 6            |
