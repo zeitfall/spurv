@@ -3,9 +3,16 @@ import { describe, it } from 'node:test';
 
 import { Matrix4 } from '../math/index.ts';
 
+import { SceneComponent } from './scene-component.ts';
 import { SceneNode } from './scene-node.ts';
 
 import { assertArrayClose } from '../testing/index.ts';
+
+class ComponentA extends SceneComponent {}
+
+class ComponentB extends SceneComponent {}
+
+class ComponentC extends ComponentA {}
 
 function readChildren(node: SceneNode) {
     return [...node.children()];
@@ -538,6 +545,214 @@ describe('SceneNode', () => {
             parent.addChild(new SceneNode());
 
             assert.equal(Array.isArray(parent.children()), false);
+        });
+    });
+
+    describe('addComponent()', () => {
+        it('attaches the component to the node', () => {
+            const node = new SceneNode();
+            const component = new ComponentA();
+
+            node.addComponent(component);
+
+            assert.equal(component.node, node);
+            assert.equal(node.getComponent(ComponentA), component);
+        });
+
+        it('returns the node', () => {
+            const node = new SceneNode();
+
+            assert.equal(node.addComponent(new ComponentA()), node);
+        });
+
+        it('accepts components of different classes', () => {
+            const node = new SceneNode();
+            const componentA = new ComponentA();
+            const componentB = new ComponentB();
+
+            node.addComponent(componentA).addComponent(componentB);
+
+            assert.equal(node.getComponent(ComponentA), componentA);
+            assert.equal(node.getComponent(ComponentB), componentB);
+        });
+
+        it('treats a subclass as a different class', () => {
+            const node = new SceneNode();
+            const componentA = new ComponentA();
+            const componentC = new ComponentC();
+
+            node.addComponent(componentA).addComponent(componentC);
+
+            assert.equal(node.getComponent(ComponentA), componentA);
+            assert.equal(node.getComponent(ComponentC), componentC);
+        });
+
+        it('rejects a second component of the same class and keeps the first', () => {
+            const node = new SceneNode();
+            const componentFirst = new ComponentA();
+            const componentSecond = new ComponentA();
+
+            node.addComponent(componentFirst);
+
+            assert.throws(() => node.addComponent(componentSecond), {
+                name: 'RangeError',
+                message: /^SceneNode\.addComponent: /,
+            });
+            assert.equal(node.getComponent(ComponentA), componentFirst);
+            assert.equal(componentSecond.node, null);
+        });
+
+        it('rejects a component that this node already holds', () => {
+            const node = new SceneNode();
+            const component = new ComponentA();
+
+            node.addComponent(component);
+
+            assert.throws(() => node.addComponent(component), {
+                name: 'RangeError',
+                message: /^SceneNode\.addComponent: /,
+            });
+            assert.equal(component.node, node);
+        });
+
+        it('rejects a component attached to another node and leaves it there', () => {
+            const nodeA = new SceneNode();
+            const nodeB = new SceneNode();
+            const component = new ComponentA();
+
+            nodeA.addComponent(component);
+
+            assert.throws(() => nodeB.addComponent(component), {
+                name: 'RangeError',
+                message: /^SceneNode\.addComponent: /,
+            });
+            assert.equal(component.node, nodeA);
+            assert.equal(nodeA.getComponent(ComponentA), component);
+            assert.equal(nodeB.getComponent(ComponentA), null);
+        });
+
+        it('accepts a removed component on another node', () => {
+            const nodeA = new SceneNode();
+            const nodeB = new SceneNode();
+            const component = new ComponentA();
+
+            nodeA.addComponent(component);
+            nodeA.removeComponent(component);
+            nodeB.addComponent(component);
+
+            assert.equal(component.node, nodeB);
+            assert.equal(nodeB.getComponent(ComponentA), component);
+        });
+    });
+
+    describe('removeComponent()', () => {
+        it('detaches the component from the node', () => {
+            const node = new SceneNode();
+            const component = new ComponentA();
+
+            node.addComponent(component);
+            node.removeComponent(component);
+
+            assert.equal(component.node, null);
+            assert.equal(node.getComponent(ComponentA), null);
+        });
+
+        it('returns the node', () => {
+            const node = new SceneNode();
+            const component = new ComponentA();
+
+            node.addComponent(component);
+
+            assert.equal(node.removeComponent(component), node);
+        });
+
+        it('allows another component of the same class afterwards', () => {
+            const node = new SceneNode();
+            const componentFirst = new ComponentA();
+            const componentSecond = new ComponentA();
+
+            node.addComponent(componentFirst);
+            node.removeComponent(componentFirst);
+            node.addComponent(componentSecond);
+
+            assert.equal(node.getComponent(ComponentA), componentSecond);
+        });
+
+        it('rejects a component that is not attached and keeps the component of its class', () => {
+            const node = new SceneNode();
+            const componentHeld = new ComponentA();
+            const componentDetached = new ComponentA();
+
+            node.addComponent(componentHeld);
+
+            assert.throws(() => node.removeComponent(componentDetached), {
+                name: 'RangeError',
+                message: /^SceneNode\.removeComponent: /,
+            });
+            assert.equal(node.getComponent(ComponentA), componentHeld);
+        });
+
+        it('rejects a component attached to another node and changes neither node', () => {
+            const nodeA = new SceneNode();
+            const nodeB = new SceneNode();
+            const componentA = new ComponentA();
+            const componentB = new ComponentA();
+
+            nodeA.addComponent(componentA);
+            nodeB.addComponent(componentB);
+
+            assert.throws(() => nodeB.removeComponent(componentA), {
+                name: 'RangeError',
+                message: /^SceneNode\.removeComponent: /,
+            });
+            assert.equal(componentA.node, nodeA);
+            assert.equal(nodeA.getComponent(ComponentA), componentA);
+            assert.equal(nodeB.getComponent(ComponentA), componentB);
+        });
+    });
+
+    describe('getComponent()', () => {
+        it('returns null when the node holds no component of the class', () => {
+            const node = new SceneNode();
+
+            node.addComponent(new ComponentB());
+
+            assert.equal(node.getComponent(ComponentA), null);
+        });
+
+        it('does not find a subclass by its parent class', () => {
+            const node = new SceneNode();
+
+            node.addComponent(new ComponentC());
+
+            assert.equal(node.getComponent(ComponentA), null);
+        });
+    });
+
+    describe('components()', () => {
+        it('iterates over no components for a new node', () => {
+            const node = new SceneNode();
+
+            assert.equal([...node.components()].length, 0);
+        });
+
+        it('iterates over the components in the order of their appending', () => {
+            const node = new SceneNode();
+            const componentA = new ComponentA();
+            const componentB = new ComponentB();
+
+            node.addComponent(componentB).addComponent(componentA);
+
+            const [componentFirst, componentSecond] = node.components();
+
+            assert.equal(componentFirst, componentB);
+            assert.equal(componentSecond, componentA);
+        });
+
+        it('does not expose the internal map', () => {
+            const node = new SceneNode();
+
+            assert.equal(node.components() instanceof Map, false);
         });
     });
 });

@@ -13,7 +13,7 @@ Bevy, the architectural reference of the project, allows one component of each t
 
 ## Decision
 
-A component is an instance of a class that directly extends the abstract class `Component` of the module `scene`, as [0018](0018-encapsulation-and-inheritance.md) permits. `Component` exposes a read-only `node`, which is the node that holds the component or null when the component is not attached. This reference makes a component self-sufficient: a camera derives its view matrix from the world matrix of its own node.
+A component is an instance of a class that directly extends the abstract class `SceneComponent` of the module `scene`, as [0018](0018-encapsulation-and-inheritance.md) permits. `SceneComponent` exposes a read-only `node`, which is the node that holds the component or null when the component is not attached. This reference makes a component self-sufficient: a camera derives its view matrix from the world matrix of its own node.
 
 A node holds at most one component of each class, and a component is found by its exact class, which the node uses as the key of its storage. Passing the class rather than a string preserves the type of the result and prevents collisions between names, and it also keeps `scene` unaware of the concrete classes, which dedicated fields such as `node.camera` would not. Whatever requires several components of one class is expressed with child nodes, since a node without components is inexpensive.
 
@@ -23,7 +23,7 @@ A component belongs to exactly one node. Adding a component throws an error when
 
 The classes of components do not form hierarchies, and the variants of a component are held inside it. A `Camera` of the module `cameras` holds a `Projection`, an abstract class of the same module whose subclasses, such as `PerspectiveProjection`, build the projection matrix from their settings with the construction methods of `Matrix4`.
 
-There is no mesh component. A renderable node carries a `GeometryComponent` of the module `geometry` and a `MaterialComponent` of the module `materials`, and the renderer draws a node only when both are present, so the two modules remain independent. These components refer to a shared `Geometry` or `Material`, which is ordinary data and not a component, so any number of nodes share one set of vertices. The suffix `Component` appears only where the name without it already denotes such data, and `Camera` therefore carries no suffix.
+There is no mesh component. A renderable node carries a `GeometryComponent` of the module `geometry` and a `MaterialComponent` of the module `materials`, and the renderer draws a node only when both are present, so the two modules remain independent. These components refer to a shared `Geometry` or `Material`, which is ordinary data and not a component, so any number of nodes share one set of vertices. Among the concrete components, the suffix `Component` appears only where the name without it already denotes such data, and `Camera` therefore carries no suffix.
 
 The renderer finds components during the extract phase ([0004](0004-frame-phases.md)) by traversing the tree from the root of the scene on every frame. A registry of components in `Scene` was rejected. It would require every node to know its scene and every change of the hierarchy to walk the affected subtree, and a defect in that bookkeeping would make objects vanish or remain after removal, while `scene.update()` already visits every node on each frame.
 
