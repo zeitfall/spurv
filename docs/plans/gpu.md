@@ -1,29 +1,33 @@
 # gpu
 
-Goal: the WebGPU layer that `renderer` requires for milestone 3 ([architecture.md](../architecture.md#milestones)).
+Goal: the WebGPU layer that `renderer` requires for milestone 3 ([architecture.md](../architecture.md#milestones)), within the scope of [0020](../decisions/0020-gpu-layer-scope.md) and in the form of [0021](../decisions/0021-render-device.md).
 
-## Device
+## RenderDevice
 
-- [ ] Asynchronous acquisition of the adapter and the device ([0002](../decisions/0002-webgpu-only.md))
-- [ ] An error for an environment without WebGPU
-- [ ] Surfacing of validation errors, out-of-memory conditions, and device loss ([api-conventions.md](../api-conventions.md#gpu-errors))
+- [x] The constructor that accepts a `GPUDevice`
+- [x] `RenderDevice.create` with `RenderDeviceOptions`, and an error when WebGPU or an adapter is unavailable
+- [x] The getter `limits`
+- [x] `createCanvasContext`, with an error when the canvas provides no WebGPU context
+- [x] `addEventListener` and `removeEventListener` with the events `devicelost`, `uncapturederror`, and `compilationerror`
+- [x] `createShaderModule` with a `compilationerror` event on a compilation failure
+- [x] One-line methods for render pipelines, pipeline layouts, bind group layouts, bind groups, command encoders, and submission
+- [x] `destroy`, which does not dispatch `devicelost`
 
-## Surface
+## Textures
 
-- [ ] Configuration of the canvas context
-- [ ] Resizing of the canvas within the texture size limit of the device
+- [ ] The texture class with a resize that replaces its WebGPU object
 - [ ] Depth texture ([0013](../decisions/0013-reversed-z-depth.md))
 
-## Resources
+## Buffers
 
-- [ ] Vertex, index, and uniform buffers with data upload
-- [ ] Shader modules with surfacing of compilation failures
-- [ ] Render pipelines, bind group layouts, and bind groups
+- [ ] The buffer class with data upload
+- [ ] A resize that replaces its WebGPU object and preserves its contents when the caller requires it
+- [ ] Methods of `RenderDevice` that create vertex, index, and uniform buffers
 
 ## Out of scope
 
-Compute, sampled textures and samplers, indirect draws, pipeline caching.
+Compute, storage buffers, sampled textures and samplers, indirect draws, pipeline caching, wrappers for pipelines and bind groups.
 
 ## Open questions
 
-- Which WebGPU objects does the layer wrap, and which does it pass through unchanged?
+- How does a texture or a buffer report the replacement of its WebGPU object?

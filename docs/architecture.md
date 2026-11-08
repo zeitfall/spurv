@@ -9,9 +9,10 @@ The rules for modules and layers are defined in [0010](decisions/0010-module-bou
 | Layer | Module  | Responsibility                 | Status  |
 | ----- | ------- | ------------------------------ | ------- |
 | 0     | `math`  | Vectors, quaternions, matrices | Created |
+| 0     | `gpu`   | WebGPU device and resources    | Created |
 | 1     | `scene` | Scene hierarchy and transforms | Created |
 
-The planned modules are `gpu` in layer 0; `geometry`, `materials`, `cameras`, and `lights` in layer 2; and `renderer` in layer 3, which will also contain the shaders.
+The planned modules are `geometry`, `materials`, `cameras`, and `lights` in layer 2; and `renderer` in layer 3, which will also contain the shaders.
 
 Three areas of the repository lie outside the layers: `src/testing` holds helpers used only by tests, `scripts/` holds the development tooling, and `examples/` holds one example per milestone.
 

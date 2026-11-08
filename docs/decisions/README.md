@@ -56,3 +56,5 @@ Each section is written in connected prose under the documentation rules of [CON
 | [0017](0017-toolchain-and-examples.md)        | Toolchain and examples                | Accepted           |
 | [0018](0018-encapsulation-and-inheritance.md) | Encapsulation and inheritance         | Accepted           |
 | [0019](0019-scene-components.md)              | Scene components                      | Accepted           |
+| [0020](0020-gpu-layer-scope.md)               | Scope of the GPU layer                | Accepted           |
+| [0021](0021-render-device.md)                 | Render device                         | Accepted           |

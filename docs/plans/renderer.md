@@ -12,6 +12,7 @@ This plan starts after the component model of [scene.md](scene.md) is defined, a
 
 - [ ] Asynchronous creation of the renderer on a canvas ([0002](../decisions/0002-webgpu-only.md))
 - [ ] GPU resources owned by the renderer ([api-conventions.md](../api-conventions.md#module-level-state))
+- [ ] Tracking of the canvas size within the texture size limit of the device, with the replacement of the depth texture
 
 ## Frame phases
 

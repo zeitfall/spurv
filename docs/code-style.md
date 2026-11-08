@@ -328,6 +328,8 @@ All declarations of one kind share a template, which fixes the verb and the stru
 | Change of a collection          | `Appends <noun phrase> to <collection>.`, `Removes <noun phrase> from <collection>.` | Appends the given task to the end of this queue.                            |
 | Iterator                        | `Creates an iterator over <noun phrase>.`                                            | Creates an iterator over the tasks of this queue, in order.                 |
 | Lookup                          | `Looks up <noun phrase>.`                                                            | Looks up the task of this queue with the given name.                        |
+| Submission                      | `Submits <noun phrase> to <target>.`                                                 | Submits the given tasks to this queue.                                      |
+| Release                         | `Destroys <noun phrase>.`                                                            | Destroys this queue and releases its resources.                             |
 | Update of derived state         | `Updates <target> from <source>.`                                                    | Updates the layout of this panel from its current settings.                 |
 | Assertion                       | `Asserts that <condition>.`                                                          | Asserts that the given numbers are equal within the tolerance.              |
 | Field, constant                 | `The <noun phrase>.`                                                                 | The fraction equal to zero.                                                 |
