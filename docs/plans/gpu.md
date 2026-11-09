@@ -1,6 +1,6 @@
 # gpu
 
-Goal: the WebGPU layer that `renderer` requires for milestone 3 ([architecture.md](../architecture.md#milestones)), within the scope of [0020](../decisions/0020-gpu-layer-scope.md) and in the form of [0021](../decisions/0021-render-device.md).
+Goal: the WebGPU layer that `renderer` requires for milestone 3 ([architecture.md](../architecture.md#milestones)), within the scope of [0020](../decisions/0020-gpu-layer-scope.md) and in the form of [0021](../decisions/0021-render-device.md) and [0022](../decisions/0022-render-device-resources.md).
 
 ## RenderDevice
 
@@ -15,19 +15,15 @@ Goal: the WebGPU layer that `renderer` requires for milestone 3 ([architecture.m
 
 ## Textures
 
-- [ ] The texture class with a resize that replaces its WebGPU object
-- [ ] Depth texture ([0013](../decisions/0013-reversed-z-depth.md))
+- [ ] `RenderDeviceTexture` with `create`, the getters `raw`, `view`, and `version`, `resize`, and `destroy`
+- [ ] `RenderDevice.createDepthTexture` that returns a `RenderDeviceTexture` without additional usage flags ([0013](../decisions/0013-reversed-z-depth.md))
 
 ## Buffers
 
-- [ ] The buffer class with data upload
-- [ ] A resize that replaces its WebGPU object and preserves its contents when the caller requires it
-- [ ] Methods of `RenderDevice` that create vertex, index, and uniform buffers
+- [ ] `RenderDeviceBuffer` with `create`, `createWithData`, the getters `raw` and `version`, `write`, `resize`, and `destroy`
+- [ ] Methods of `RenderDevice` that create vertex, index, and uniform buffers and return a `RenderDeviceBuffer` without additional usage flags
+- [ ] `createVertexBufferWithData`, `createIndexBufferWithData`, and `createUniformBufferWithData` of `RenderDevice`
 
 ## Out of scope
 
-Compute, storage buffers, sampled textures and samplers, indirect draws, pipeline caching, wrappers for pipelines and bind groups.
-
-## Open questions
-
-- How does a texture or a buffer report the replacement of its WebGPU object?
+Compute, storage buffers, sampled textures and samplers, indirect draws, pipeline caching, wrappers for pipelines and bind groups, preservation of the contents of a buffer across a resize.
