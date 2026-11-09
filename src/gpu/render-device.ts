@@ -1,3 +1,6 @@
+import { RenderDeviceBuffer } from './render-device-buffer.ts';
+import { RenderDeviceTexture } from './render-device-texture.ts';
+
 const RenderDeviceEventType = {
     DEVICE_LOST: 'devicelost',
     UNCAPTURED_ERROR: 'uncapturederror',
@@ -81,9 +84,7 @@ class RenderDevice {
      * @param eventListenerOptions - The options of the listener.
      *
      * @remarks `devicelost` reports an unexpected loss of the device.
-     *
      * @remarks `uncapturederror` reports a GPU error that no other code has handled.
-     *
      * @remarks `compilationerror` reports a problem in the source code of a shader.
      */
     addEventListener<
@@ -154,45 +155,66 @@ class RenderDevice {
      * Creates a vertex buffer with the given size.
      *
      * @param size - The size of the buffer.
-     * @param usage - The usage flags to add to those of a vertex buffer.
      *
      * @remarks The size is in bytes.
      */
-    createVertexBuffer(size: number, usage = 0) {
-        return this.#gpuDevice.createBuffer({
-            size,
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST | usage,
-        });
+    createVertexBuffer(size: number) {
+        return RenderDeviceBuffer.create(this.#gpuDevice, size, GPUBufferUsage.VERTEX);
+    }
+
+    /**
+     * Creates a vertex buffer with the given data.
+     *
+     * @param data - The initial contents of the buffer.
+     *
+     * @remarks The size of the buffer is the byte length of the data rounded up to a multiple of 4.
+     */
+    createVertexBufferWithData(data: ArrayBufferView) {
+        return RenderDeviceBuffer.createWithData(this.#gpuDevice, data, GPUBufferUsage.VERTEX);
     }
 
     /**
      * Creates an index buffer with the given size.
      *
      * @param size - The size of the buffer.
-     * @param usage - The usage flags to add to those of an index buffer.
      *
      * @remarks The size is in bytes.
      */
-    createIndexBuffer(size: number, usage = 0) {
-        return this.#gpuDevice.createBuffer({
-            size,
-            usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST | usage,
-        });
+    createIndexBuffer(size: number) {
+        return RenderDeviceBuffer.create(this.#gpuDevice, size, GPUBufferUsage.INDEX);
+    }
+
+    /**
+     * Creates an index buffer with the given data.
+     *
+     * @param data - The initial contents of the buffer.
+     *
+     * @remarks The size of the buffer is the byte length of the data rounded up to a multiple of 4.
+     */
+    createIndexBufferWithData(data: ArrayBufferView) {
+        return RenderDeviceBuffer.createWithData(this.#gpuDevice, data, GPUBufferUsage.INDEX);
     }
 
     /**
      * Creates a uniform buffer with the given size.
      *
      * @param size - The size of the buffer.
-     * @param usage - The usage flags to add to those of a uniform buffer.
      *
      * @remarks The size is in bytes.
      */
-    createUniformBuffer(size: number, usage = 0) {
-        return this.#gpuDevice.createBuffer({
-            size,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST | usage,
-        });
+    createUniformBuffer(size: number) {
+        return RenderDeviceBuffer.create(this.#gpuDevice, size, GPUBufferUsage.UNIFORM);
+    }
+
+    /**
+     * Creates a uniform buffer with the given data.
+     *
+     * @param data - The initial contents of the buffer.
+     *
+     * @remarks The size of the buffer is the byte length of the data rounded up to a multiple of 4.
+     */
+    createUniformBufferWithData(data: ArrayBufferView) {
+        return RenderDeviceBuffer.createWithData(this.#gpuDevice, data, GPUBufferUsage.UNIFORM);
     }
 
     // Textures ---------------------------------------------------------------
@@ -202,15 +224,14 @@ class RenderDevice {
      *
      * @param width - The width of the texture.
      * @param height - The height of the texture.
-     * @param usage - The usage flags to add to those of a depth texture.
      *
      * @remarks The width and the height are in texels.
      */
-    createDepthTexture(width: number, height: number, usage = 0) {
-        return this.#gpuDevice.createTexture({
+    createDepthTexture(width: number, height: number) {
+        return RenderDeviceTexture.create(this.#gpuDevice, {
             size: [width, height],
             format: 'depth32float',
-            usage: GPUTextureUsage.RENDER_ATTACHMENT | usage,
+            usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
     }
 

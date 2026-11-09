@@ -47,6 +47,23 @@ function createFakeDevice(compilationMessages: object[] = []) {
         };
     }
 
+    function createBuffer(argument: GPUBufferDescriptor) {
+        const mappedRange = new ArrayBuffer(argument.size);
+        const result = { method: 'createBuffer', getMappedRange: () => mappedRange, unmap: () => {} };
+
+        calls.push({ method: 'createBuffer', argument, result });
+
+        return result;
+    }
+
+    function createTexture(argument: unknown) {
+        const result = { method: 'createTexture', createView: () => ({ method: 'createView' }) };
+
+        calls.push({ method: 'createTexture', argument, result });
+
+        return result;
+    }
+
     function createShaderModule(argument: unknown) {
         const result = {
             method: 'createShaderModule',
@@ -63,8 +80,8 @@ function createFakeDevice(compilationMessages: object[] = []) {
         lost,
         queue: { submit: record('submit') },
         addEventListener: eventTarget.addEventListener.bind(eventTarget),
-        createBuffer: record('createBuffer'),
-        createTexture: record('createTexture'),
+        createBuffer,
+        createTexture,
         createBindGroupLayout: record('createBindGroupLayout'),
         createBindGroup: record('createBindGroup'),
         createPipelineLayout: record('createPipelineLayout'),
@@ -276,16 +293,20 @@ describe('RenderDevice', () => {
             const result = device.createVertexBuffer(64);
             const call = findCall(calls, 'createBuffer');
 
-            assert.equal(result, call.result);
+            assert.equal(result.raw, call.result);
             assert.deepEqual(call.argument, { size: 64, usage: 40 });
         });
+    });
 
-        it('adds the given usage flags', () => {
+    describe('createVertexBufferWithData()', () => {
+        it('creates a writable vertex buffer that is mapped for the given data', () => {
             const { device, calls } = createFakeDevice();
 
-            device.createVertexBuffer(64, 4);
+            const result = device.createVertexBufferWithData(new Uint32Array(2));
+            const call = findCall(calls, 'createBuffer');
 
-            assert.deepEqual(findCall(calls, 'createBuffer').argument, { size: 64, usage: 44 });
+            assert.equal(result.raw, call.result);
+            assert.deepEqual(call.argument, { size: 8, usage: 40, mappedAtCreation: true });
         });
     });
 
@@ -296,16 +317,20 @@ describe('RenderDevice', () => {
             const result = device.createIndexBuffer(32);
             const call = findCall(calls, 'createBuffer');
 
-            assert.equal(result, call.result);
+            assert.equal(result.raw, call.result);
             assert.deepEqual(call.argument, { size: 32, usage: 24 });
         });
+    });
 
-        it('adds the given usage flags', () => {
+    describe('createIndexBufferWithData()', () => {
+        it('creates a writable index buffer that is mapped for the given data', () => {
             const { device, calls } = createFakeDevice();
 
-            device.createIndexBuffer(32, 4);
+            const result = device.createIndexBufferWithData(new Uint32Array(2));
+            const call = findCall(calls, 'createBuffer');
 
-            assert.deepEqual(findCall(calls, 'createBuffer').argument, { size: 32, usage: 28 });
+            assert.equal(result.raw, call.result);
+            assert.deepEqual(call.argument, { size: 8, usage: 24, mappedAtCreation: true });
         });
     });
 
@@ -316,16 +341,20 @@ describe('RenderDevice', () => {
             const result = device.createUniformBuffer(16);
             const call = findCall(calls, 'createBuffer');
 
-            assert.equal(result, call.result);
+            assert.equal(result.raw, call.result);
             assert.deepEqual(call.argument, { size: 16, usage: 72 });
         });
+    });
 
-        it('adds the given usage flags', () => {
+    describe('createUniformBufferWithData()', () => {
+        it('creates a writable uniform buffer that is mapped for the given data', () => {
             const { device, calls } = createFakeDevice();
 
-            device.createUniformBuffer(16, 4);
+            const result = device.createUniformBufferWithData(new Uint32Array(2));
+            const call = findCall(calls, 'createBuffer');
 
-            assert.deepEqual(findCall(calls, 'createBuffer').argument, { size: 16, usage: 76 });
+            assert.equal(result.raw, call.result);
+            assert.deepEqual(call.argument, { size: 8, usage: 72, mappedAtCreation: true });
         });
     });
 
@@ -336,20 +365,8 @@ describe('RenderDevice', () => {
             const result = device.createDepthTexture(800, 600);
             const call = findCall(calls, 'createTexture');
 
-            assert.equal(result, call.result);
+            assert.equal(result.raw, call.result);
             assert.deepEqual(call.argument, { size: [800, 600], format: 'depth32float', usage: 16 });
-        });
-
-        it('adds the given usage flags', () => {
-            const { device, calls } = createFakeDevice();
-
-            device.createDepthTexture(800, 600, 4);
-
-            assert.deepEqual(findCall(calls, 'createTexture').argument, {
-                size: [800, 600],
-                format: 'depth32float',
-                usage: 20,
-            });
         });
     });
 

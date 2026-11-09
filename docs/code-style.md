@@ -308,7 +308,7 @@ The register follows [CONTRIBUTING.md](../CONTRIBUTING.md#documentation): formal
 
 Tags carry no types, because TypeScript already provides them. The permitted tags are `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, and `@deprecated`. A method that returns `this` omits `@returns`, and the documentation of its class states this convention once, in a second sentence. Otherwise, `@returns` appears only when the sentence does not already name the returned value: "Computes..." and "Creates..." omit it, whereas "Writes..." and "Copies..." require it.
 
-Blank lines separate the sentence, the group of `@typeParam` and `@param` tags, `@returns`, and each remaining tag.
+Blank lines separate the sentence, the group of `@typeParam` and `@param` tags, `@returns`, the group of `@remarks` tags, and each remaining tag.
 
 #### Templates
 
@@ -373,7 +373,7 @@ class Fraction {
 
 Only built-in error classes are used, and only `Error` instances are thrown. When an error is wrapped, the original is preserved as its `cause`: `new Error(message, { cause: error })`. An `async` function reports failure by throwing, never by constructing a rejected promise.
 
-Constructors, setters, and functions that create resources validate their arguments, provided they lie outside hot paths; hot paths never validate. There is no separate validation mode for development builds.
+Constructors, setters, and functions that create resources validate their arguments, provided they lie outside hot paths; hot paths never validate. An argument that the underlying platform API validates is not validated again. There is no separate validation mode for development builds.
 
 Errors are never swallowed, and an empty `catch` is therefore forbidden. A `catch` block either adds context and rethrows, or recovers deliberately.
 
@@ -392,7 +392,7 @@ A value type has no setters for derived values. Such a value is assigned through
 ## Parameters
 
 - Boolean parameters are not used. Separate methods or an options property express the choice instead.
-- Value types take positional parameters, with default values for the optional ones. Elsewhere, a function that has more than three parameters, or any optional parameter, takes an options object: `new ClassA({ optionA, optionB })`.
+- Value types take positional parameters, with default values for the optional ones. Elsewhere, a function takes an options object when it has more than three parameters or more than one optional parameter: `new ClassA({ optionA, optionB })`. A single optional parameter stands last and is positional: `methodA(target, offset = 0)`.
 - Each method has exactly one signature, so a parameter never changes the behavior of a method according to its type. Rather than accepting `ClassA | number`, a class offers two separate methods.
 - An output parameter is named `target` and is documented. When a method has several output parameters, each is named `target` followed by its noun, such as `targetPosition`.
 
