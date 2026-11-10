@@ -72,7 +72,7 @@ function computeAspectRatio(canvas: HTMLCanvasElement) {
 
 ## File structure
 
-A file contains one class, one enum object, or a group of related functions or constants. Its parts appear in a fixed order: imports, local types, module constants, side tables ([Module scope](#module-scope)), classes and functions, scratch variables, and finally the export statement. Scratch variables come after the classes because a class cannot be instantiated before its declaration has been evaluated. An enum object file is the one exception to this order, since its type alias is derived from the object and therefore follows it ([Enum objects](#enum-objects)).
+A file contains one class, one enum object, or a group of related functions or constants. Its parts appear in a fixed order: imports, local types, module constants, side tables ([Module scope](#module-scope)), classes and functions, scratch variables, and finally the export statement. Scratch variables come after the classes because a class cannot be instantiated before its declaration has been evaluated. A function that serves only the class of its file follows that class, as a private method follows its first caller. An enum object file is the one exception to this order, since its type alias is derived from the object and therefore follows it ([Enum objects](#enum-objects)).
 
 ### Imports
 
@@ -164,7 +164,7 @@ Members appear in the following order:
 3. `#private` fields.
 4. Public fields, which only value types have.
 5. The constructor.
-6. Public accessors, with each getter immediately followed by its setter.
+6. Public accessors.
 7. `#private` accessors.
 8. Public methods.
 9. `#private` methods.
@@ -306,7 +306,7 @@ The register follows [CONTRIBUTING.md](../CONTRIBUTING.md#documentation): formal
 
 `@remarks` is reserved for a fact that the caller must know but the sentence cannot state, such as the result for degenerate input, the mutation of an argument, or the reason for a `protected` member. Each fact takes one short sentence. A fact that the sentence can state, such as the order of elements, belongs in the sentence. Units are the one exception: they are always stated in `@remarks`, as in "The angle is in radians.", so that every unit can be found in the same place.
 
-Tags carry no types, because TypeScript already provides them. The permitted tags are `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, and `@deprecated`. A method that returns `this` omits `@returns`, and the documentation of its class states this convention once, in a second sentence. Otherwise, `@returns` appears only when the sentence does not already name the returned value: "Computes..." and "Creates..." omit it, whereas "Writes..." and "Copies..." require it.
+Tags carry no types, because TypeScript already provides them. The permitted tags are `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, and `@deprecated`. A method that returns `this` omits `@returns`, and the documentation of its class states this convention once, in a second sentence. Otherwise, `@returns` appears only when the sentence does not already name the returned value: "Computes..." and "Creates..." omit it, whereas "Writes...", "Copies...", and a computation into a target require it.
 
 Blank lines separate the sentence, the group of `@typeParam` and `@param` tags, `@returns`, the group of `@remarks` tags, and each remaining tag.
 
@@ -324,7 +324,8 @@ All declarations of one kind share a template, which fixes the verb and the stru
 | Mutation of the receiver        | `Sets this <type> to <result>.`                                                      | Sets this fraction to the sum of itself and the given fraction.             |
 | Predicate                       | `Determines whether <condition>.`                                                    | Determines whether this fraction equals the given fraction.                 |
 | Output into a target            | `Writes <noun phrase> into the given <noun>.`                                        | Writes the numerator and denominator of this fraction into the given array. |
-| Copy into a target              | `Copies <noun phrase> into the given <noun>.`                                        | Copies the reduced form of this fraction into the given fraction.           |
+| Copy into a target              | `Copies <noun phrase> into the given <noun>.`                                        | Copies the bounds of this panel into the given rectangle.                   |
+| Computation into a target       | `Computes <noun phrase> into the given <noun>.`                                      | Computes the reduced form of this fraction into the given fraction.         |
 | Change of a collection          | `Appends <noun phrase> to <collection>.`, `Removes <noun phrase> from <collection>.` | Appends the given task to the end of this queue.                            |
 | Iterator                        | `Creates an iterator over <noun phrase>.`                                            | Creates an iterator over the tasks of this queue, in order.                 |
 | Lookup                          | `Looks up <noun phrase>.`                                                            | Looks up the task of this queue with the given name.                        |
@@ -373,7 +374,7 @@ class Fraction {
 
 Only built-in error classes are used, and only `Error` instances are thrown. When an error is wrapped, the original is preserved as its `cause`: `new Error(message, { cause: error })`. An `async` function reports failure by throwing, never by constructing a rejected promise.
 
-Constructors, setters, and functions that create resources validate their arguments, provided they lie outside hot paths; hot paths never validate. An argument that the underlying platform API validates is not validated again. There is no separate validation mode for development builds.
+Constructors, methods that assign a property, and functions that create resources validate their arguments, provided they lie outside hot paths; hot paths never validate. An argument that the underlying platform API validates is not validated again. There is no separate validation mode for development builds.
 
 Errors are never swallowed, and an empty `catch` is therefore forbidden. A `catch` block either adds context and rethrows, or recovers deliberately.
 
@@ -383,11 +384,13 @@ An error message follows the format `<Owner>.<member>: expected <expectation>, r
 throw new RangeError(`ClassA.propertyA: expected a value in (0, 1), received ${value}.`);
 ```
 
+A validation that several members of a class repeat is extracted into a function of the same file, whereas a validation that occurs once remains in its member. The name of the function begins with `assert` and states what is checked. The function takes the value to check, followed by the name of the calling member for the error message, and it returns nothing.
+
 ## Accessors and methods
 
 A getter is appropriate when the value is computed in constant time, has no side effects, allocates nothing, and requires no arguments; a computation over a fixed number of components counts as constant time. In every other case a method is used. Thus `fraction.value` is a getter, while `fraction.reduce()` is a method.
 
-A value type has no setters for derived values. Such a value is assigned through a method instead, for example `setPropertyA(value)` in place of `instanceA.propertyA = value`.
+A class has no setters. A property is assigned through a method whose name consists of `set` and the name of the property, as in `instanceA.setPropertyA(value)` in place of `instanceA.propertyA = value`, and the method returns the instance. In plain JavaScript, an assignment to a misspelled property creates a new property without any error, whereas a call to a misspelled method throws. The form of a call also indicates that the assignment can validate its argument and throw. The public component fields of a value type are assigned directly, and a derived value of a value type is assigned through such a method.
 
 ## Parameters
 

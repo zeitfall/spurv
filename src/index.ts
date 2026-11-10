@@ -2,3 +2,4 @@ export { degreesToRadians, radiansToDegrees, clamp, lerp, inverseLerp } from './
 
 export { Vector3, Quaternion, Matrix4 } from './math/index.ts';
 export { SceneComponent, Transform, SceneNode, Scene } from './scene/index.ts';
+export { Projection, Camera, PerspectiveProjection } from './cameras/index.ts';
