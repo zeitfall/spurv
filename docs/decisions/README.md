@@ -59,3 +59,4 @@ Each section is written in connected prose under the documentation rules of [CON
 | [0020](0020-gpu-layer-scope.md)               | Scope of the GPU layer                | Accepted           |
 | [0021](0021-render-device.md)                 | Render device                         | Accepted           |
 | [0022](0022-render-device-resources.md)       | Render device resources               | Accepted           |
+| [0023](0023-camera-and-projection.md)         | Camera and projection                 | Accepted           |

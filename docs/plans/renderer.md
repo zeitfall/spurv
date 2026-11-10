@@ -2,7 +2,7 @@
 
 Goal: the rendering of the `02-hierarchy` scene through the public API, as milestone 3 requires ([architecture.md](../architecture.md#milestones)).
 
-This plan starts after the component model of [scene.md](scene.md) is defined, and it relies on [gpu.md](gpu.md), [cameras.md](cameras.md), [geometry.md](geometry.md), and [materials.md](materials.md).
+This plan starts after the component model of [scene.md](scene.md) is defined, and it relies on the modules `gpu` and `cameras` and on the plans [geometry.md](geometry.md) and [materials.md](materials.md).
 
 ## Design
 

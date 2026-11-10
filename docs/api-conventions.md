@@ -39,6 +39,8 @@ Methods that assign the receiver from another representation, such as `setFromAr
 
 The verb names the kind of destination, as it does in WebGPU (`writeBuffer`, `copyBufferToBuffer`). `copy` transfers a value into an instance of its own type: `copy(source)` copies into `this`, whereas a method that copies one of the receiver's values into a given instance names that value and ends in `To`, as in `node.copyWorldMatrixTo(target)`. `write`, by contrast, transfers components into an array or a typed array, and a method that writes a value other than the receiver itself names that value: `writeWorldMatrixToArray(target, offset = 0)`. In both cases the method returns its target.
 
+`copy` and `write` transfer a value that the receiver holds. A method that instead derives a value on every call and stores it in a given instance begins with `compute`, names that value, and ends in `Into`, as in `camera.computeViewMatrixInto(target)`, so that the verb indicates whether a call performs a computation. The ending is `Into` because a result is computed into its destination, whereas a value is copied or written to one. Such a method takes its target as the first parameter and returns it.
+
 ## Operations
 
 A binary operation combines `this` with its operand and stores the result in `this`, so `a.subtract(b)` sets `a` to `a - b`. Two-operand variants such as `addVectors` or `multiplyMatrices` do not exist; a result that involves several operands is composed by chaining instead: `target.copy(a).add(b)`. Because the multiplication of matrices and of quaternions is not commutative, these types also offer `premultiply(operand)`, which multiplies in the opposite order, so that `a.premultiply(b)` sets `a` to `b * a`.
