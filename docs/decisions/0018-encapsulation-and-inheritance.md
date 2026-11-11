@@ -9,7 +9,7 @@ This ADR supersedes [0007](0007-runtime-encapsulation.md). It keeps the rules of
 
 The TypeScript modifiers `readonly` and `private` exist only at compile time, so plain JavaScript consumers, for example those that load the library from a CDN, bypass them. Deep inheritance with wide contracts between parent and child produces fragile hierarchies.
 
-0007 permits inheritance only for contracts inside a module and names `Camera` and `Material` as examples. The component model of [0019](0019-scene-components.md) departs from this rule in two respects. Its base class `SceneComponent` belongs to the module `scene`, whereas the classes that extend it belong to modules of higher layers, and its `Camera` is a concrete class that holds a projection, so `Camera` no longer illustrates the rule.
+0007 permits inheritance only for contracts inside a module and names `Camera` and `Material` as examples. The component model of [0026](0026-scene-components-and-meshes.md) departs from this rule in two respects. Its base class `SceneComponent` belongs to the module `scene`, whereas the classes that extend it belong to modules of higher layers, and its `Camera` is a concrete class that holds a projection, so `Camera` no longer illustrates the rule.
 
 ## Decision
 

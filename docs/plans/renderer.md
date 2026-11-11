@@ -2,7 +2,7 @@
 
 Goal: the rendering of the `02-hierarchy` scene through the public API, as milestone 3 requires ([architecture.md](../architecture.md#milestones)).
 
-This plan starts after the component model of [scene.md](scene.md) is defined, and it relies on the modules `gpu` and `cameras` and on the plans [geometry.md](geometry.md) and [materials.md](materials.md).
+This plan relies on the modules `gpu`, `scene`, `cameras`, and `geometry` and on the plans [materials.md](materials.md) and [meshes.md](meshes.md).
 
 ## Design
 
@@ -18,7 +18,8 @@ This plan starts after the component model of [scene.md](scene.md) is defined, a
 
 The phases are defined in [0004](../decisions/0004-frame-phases.md).
 
-- [ ] Extract: flat render-world structures of cameras and of the nodes that carry both a `GeometryComponent` and a `MaterialComponent`, with conversion to f32
+- [ ] Traversal of the scene from its root within the extract phase, through `children()` and `getComponent()` of `SceneNode` ([0026](../decisions/0026-scene-components-and-meshes.md))
+- [ ] Extract: flat render-world structures of cameras and of the nodes that carry a `Mesh`, with conversion to f32
 - [ ] Prepare: upload of the extracted data and creation of GPU resources
 - [ ] Queue: draw commands grouped by pipeline
 - [ ] Render: one color and depth pass ([0013](../decisions/0013-reversed-z-depth.md))
@@ -39,3 +40,7 @@ Frame graph, batching, instancing, culling, lights, multiple passes, automatic G
 ## Open questions
 
 - Is the render world rebuilt on every frame, or updated from the transform versions ([0015](../decisions/0015-transform-versions.md))?
+- Which shader location does each vertex attribute take, and how does a shader state the attributes that it requires ([0024](../decisions/0024-geometry-and-vertex-data.md))?
+- How are WGSL identifiers named, how is shader source composed, and which bind group holds the data of the view, of the material, and of the mesh?
+- Does a geometry occupy one GPU buffer for each attribute or a single packed buffer, how does the renderer relate a `Geometry` to its buffers, and when are those buffers released?
+- How do the world matrices of the meshes reach the shader?

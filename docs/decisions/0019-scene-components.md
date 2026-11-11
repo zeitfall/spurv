@@ -1,6 +1,6 @@
 # 0019. Scene components
 
-- Status: Accepted
+- Status: Superseded by 0026
 - Date: 2026-11-08
 
 ## Context

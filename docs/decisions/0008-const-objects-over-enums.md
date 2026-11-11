@@ -1,6 +1,6 @@
 # 0008. Const objects instead of enums
 
-- Status: Accepted
+- Status: Superseded by 0025
 - Date: 2026-10-27
 
 ## Context

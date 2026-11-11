@@ -23,23 +23,25 @@ Angles are expressed in radians throughout the API, `fieldOfView` included, and 
 
 Every copyable type provides the methods below, with the same names and semantics. The signature `set(x, y, z)` is the form used by `Vector3`; other types take their own components.
 
-| Method                             | Semantics                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| `set(x, y, z)`                     | Assigns the components                                                    |
-| `setFromArray(array, offset = 0)`  | Assigns the components read from an `ArrayLike<number>`                   |
-| `copy(source)`                     | Copies the value of an instance of the same type                          |
-| `clone()`                          | Creates a new instance with the same value                                |
-| `equals(other, tolerance = 0)`     | Determines whether every component differs by at most `tolerance`         |
-| `notEquals(other, tolerance = 0)`  | Determines whether `equals` is false                                      |
-| `writeToArray(target, offset = 0)` | Writes the components into the given array without allocating, returns it |
+| Method                                 | Semantics                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------- |
+| `set(x, y, z)`                         | Assigns the components                                                    |
+| `setFromArray(array, arrayOffset = 0)` | Assigns the components read from an `ArrayLike<number>`                   |
+| `copy(source)`                         | Copies the value of an instance of the same type                          |
+| `clone()`                              | Creates a new instance with the same value                                |
+| `equals(other, tolerance = 0)`         | Determines whether every component differs by at most `tolerance`         |
+| `notEquals(other, tolerance = 0)`      | Determines whether `equals` is false                                      |
+| `writeToArray(array, arrayOffset = 0)` | Writes the components into the given array without allocating, returns it |
 
 Methods that assign the receiver from another representation, such as `setFromArray` or `setFromAxisAngle`, belong to the assignment group and follow `set`, while `writeToArray` belongs to the conversion group.
 
+The parameter `arrayOffset` of `setFromArray` and `writeToArray` is the index of the first element in the given array. It is named after the array, and not `offset` alone, because some receivers, such as a vertex attribute, hold a sequence of their own, in which a bare offset could equally denote a position.
+
 ## Copy and write
 
-The verb names the kind of destination, as it does in WebGPU (`writeBuffer`, `copyBufferToBuffer`). `copy` transfers a value into an instance of its own type: `copy(source)` copies into `this`, whereas a method that copies one of the receiver's values into a given instance names that value and ends in `To`, as in `node.copyWorldMatrixTo(target)`. `write`, by contrast, transfers components into an array or a typed array, and a method that writes a value other than the receiver itself names that value: `writeWorldMatrixToArray(target, offset = 0)`. In both cases the method returns its target.
+The verb names the kind of destination, as it does in WebGPU (`writeBuffer`, `copyBufferToBuffer`). `copy` transfers a value into an instance of its own type: `copy(source)` copies into `this`, whereas a method that copies one of the receiver's values into a given instance names that value and ends in `To`, as in `node.copyWorldMatrixTo(matrix)`. `write`, by contrast, transfers components into an array or a typed array, and a method that writes a value other than the receiver itself names that value: `writeWorldMatrixToArray(array, arrayOffset = 0)`. In both cases the method returns its target.
 
-`copy` and `write` transfer a value that the receiver holds. A method that instead derives a value on every call and stores it in a given instance begins with `compute`, names that value, and ends in `Into`, as in `camera.computeViewMatrixInto(target)`, so that the verb indicates whether a call performs a computation. The ending is `Into` because a result is computed into its destination, whereas a value is copied or written to one. Such a method takes its target as the first parameter and returns it.
+`copy` and `write` transfer a value that the receiver holds. A method that instead derives a value on every call and stores it in a given instance begins with `compute`, names that value, and ends in `Into`, as in `camera.computeViewMatrixInto(matrix)`, so that the verb indicates whether a call performs a computation. The ending is `Into` because a result is computed into its destination, whereas a value is copied or written to one. Such a method takes its target as the first parameter and returns it.
 
 ## Operations
 
