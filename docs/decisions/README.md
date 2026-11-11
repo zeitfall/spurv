@@ -44,7 +44,7 @@ Each section is written in connected prose under the documentation rules of [CON
 | [0005](0005-math-conventions.md)              | Math conventions                      | Accepted           |
 | [0006](0006-transform-change-tracking.md)     | Transform change tracking             | Superseded by 0015 |
 | [0007](0007-runtime-encapsulation.md)         | Runtime encapsulation and inheritance | Superseded by 0018 |
-| [0008](0008-const-objects-over-enums.md)      | Const objects instead of enums        | Accepted           |
+| [0008](0008-const-objects-over-enums.md)      | Const objects instead of enums        | Superseded by 0025 |
 | [0009](0009-toolchain.md)                     | Toolchain                             | Superseded by 0017 |
 | [0010](0010-module-boundaries-and-layers.md)  | Module boundaries and layers          | Accepted           |
 | [0011](0011-colocated-tests.md)               | Colocated tests                       | Accepted           |
@@ -55,8 +55,12 @@ Each section is written in connected prose under the documentation rules of [CON
 | [0016](0016-examples-on-github-pages.md)      | Examples on GitHub Pages              | Superseded by 0017 |
 | [0017](0017-toolchain-and-examples.md)        | Toolchain and examples                | Accepted           |
 | [0018](0018-encapsulation-and-inheritance.md) | Encapsulation and inheritance         | Accepted           |
-| [0019](0019-scene-components.md)              | Scene components                      | Accepted           |
+| [0019](0019-scene-components.md)              | Scene components                      | Superseded by 0026 |
 | [0020](0020-gpu-layer-scope.md)               | Scope of the GPU layer                | Accepted           |
 | [0021](0021-render-device.md)                 | Render device                         | Accepted           |
 | [0022](0022-render-device-resources.md)       | Render device resources               | Accepted           |
 | [0023](0023-camera-and-projection.md)         | Camera and projection                 | Accepted           |
+| [0024](0024-geometry-and-vertex-data.md)      | Geometry and vertex data              | Accepted           |
+| [0025](0025-frozen-enum-objects.md)           | Frozen enum objects                   | Accepted           |
+| [0026](0026-scene-components-and-meshes.md)   | Scene components and meshes           | Accepted           |
+| [0027](0027-renderer.md)                      | Renderer                              | Proposed           |

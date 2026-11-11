@@ -86,7 +86,7 @@ Runtime imports between the files of one module never form a cycle, because a cy
 
 With the exception of `index.ts`, a file exports its names through a single `export { ... };` statement at the end, which lists them in the order of their declarations. Default exports and inline `export` keywords are not used. A class file exports exactly its class, whereas `types.ts` may export several types.
 
-An `index.ts` file contains nothing but named re-exports, such as `export { ClassA } from './class-a.ts';` and `export type { InterfaceA } from './types.ts';`; `export *` is forbidden. The re-exports form groups separated by one blank line according to the kind of source file, in this order: functions and constants, enum objects, classes, and types. Within each group they follow the ordering rules for imports.
+An `index.ts` file contains nothing but named re-exports, such as `export { ClassA } from './class-a.ts';` and `export type { InterfaceA } from './types.ts';`; `export *` is forbidden. A re-export that exists only for another module of the library is preceded by the comment `/** @internal */`. The tag stands on the re-export and not on the declaration, because the declaration files would otherwise export a name whose declaration has been removed. The re-exports form groups separated by one blank line according to the kind of source file, in this order: functions and constants, enum objects, classes, and types. Within each group they follow the ordering rules for imports.
 
 Test files, example files, and script entry points have no export statement at all. When several scripts share code, that code lives in a separate file next to them, which is not itself an entry point. A configuration file that a tool loads through its default export is the one exception to the rule against default exports: it declares the configuration as a constant and exports it in the final statement as `export { configA as default };`.
 
@@ -113,7 +113,7 @@ In library code, a module-level binding takes one of three forms:
 
 - a deeply immutable value, named in CONSTANT_CASE ([Case](#case));
 - a scratch variable ([Scratch variables](#scratch-variables));
-- a side table, that is, a `WeakMap` or `WeakSet` keyed by objects that holds private state shared by several classes of one module. A side table is named after the relation it records, is never exported from `index.ts`, and lives in a file of its own when several files use it.
+- a side table, that is, a `WeakMap` or `WeakSet` keyed by objects that holds private state shared by several classes of one module. A side table is named after the relation it records and lives in a file of its own when several files use it. The table itself is never exported. Its file exports one function for each operation that the module requires, so that no other file can perform any other operation on the table. Each function is named after its operation and one entry of the table, and the functions that read the table precede those that change it. Such a function is exported from `index.ts` only when another module requires it, and it is then marked `@internal`.
 
 Any other module-level state, whether a cache, a counter, or a registry, is forbidden. State that belongs to an instance of a system is a field of that instance instead. The reason is that module-level state is shared by every instance and every test, whereas each entry of a side table belongs to its key and is released together with it.
 
@@ -121,10 +121,19 @@ Scripts and examples are programs rather than libraries. Their module scope is t
 
 ```ts
 import type { ClassA } from './class-a.ts';
+import type { ClassB } from './class-b.ts';
 
-const detachedInstances = new WeakSet<ClassA>();
+const instanceOwners = new WeakMap<ClassA, ClassB>();
 
-export { detachedInstances };
+function getInstanceOwner(instance: ClassA) {
+    return instanceOwners.get(instance) ?? null;
+}
+
+function setInstanceOwner(instance: ClassA, owner: ClassB) {
+    instanceOwners.set(instance, owner);
+}
+
+export { getInstanceOwner, setInstanceOwner };
 ```
 
 ## Types
@@ -259,17 +268,17 @@ A method name takes a preposition only when the role of its argument would other
 ### Enum objects
 
 ```ts
-const EnumA = {
+const EnumA = Object.freeze({
     KEY_A: 'KEY_A',
     KEY_B: 'KEY_B',
-} as const;
+});
 
 type EnumA = (typeof EnumA)[keyof typeof EnumA];
 
 export { EnumA };
 ```
 
-An enum object lives in a file of its own, which exports only that object, and the object and its type share one name. Each value equals its key, unless the enum mirrors an enumeration of an external API, in which case each value is the string that API expects, so that it can be passed through without mapping.
+An enum object lives in a file of its own, which exports only that object, and the object and its type share one name. The object is frozen with `Object.freeze` and takes no `as const`, so that it is immutable at runtime ([0025](decisions/0025-frozen-enum-objects.md)). Each value equals its key, unless the enum mirrors an enumeration of an external API, in which case each value is the string that API expects, so that it can be passed through without mapping.
 
 ### Scratch variables
 
@@ -306,7 +315,7 @@ The register follows [CONTRIBUTING.md](../CONTRIBUTING.md#documentation): formal
 
 `@remarks` is reserved for a fact that the caller must know but the sentence cannot state, such as the result for degenerate input, the mutation of an argument, or the reason for a `protected` member. Each fact takes one short sentence. A fact that the sentence can state, such as the order of elements, belongs in the sentence. Units are the one exception: they are always stated in `@remarks`, as in "The angle is in radians.", so that every unit can be found in the same place.
 
-Tags carry no types, because TypeScript already provides them. The permitted tags are `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, and `@deprecated`. A method that returns `this` omits `@returns`, and the documentation of its class states this convention once, in a second sentence. Otherwise, `@returns` appears only when the sentence does not already name the returned value: "Computes..." and "Creates..." omit it, whereas "Writes...", "Copies...", and a computation into a target require it.
+Tags carry no types, because TypeScript already provides them. The permitted tags are `@param name - Description.`, `@typeParam`, `@returns`, `@throws`, `@remarks`, `@internal`, and `@deprecated`. A method that returns `this` omits `@returns`. The documentation of a class does not state conventions of its methods, such as which of them return the instance, because the signature of each method already shows it. Otherwise, `@returns` appears only when the sentence does not already name the returned value: "Computes..." and "Creates..." omit it, whereas "Writes...", "Copies...", and a computation into a target require it.
 
 Blank lines separate the sentence, the group of `@typeParam` and `@param` tags, `@returns`, the group of `@remarks` tags, and each remaining tag.
 
@@ -339,8 +348,6 @@ All declarations of one kind share a template, which fixes the verb and the stru
 ```ts
 /**
  * A rational number stored as a numerator and a denominator.
- *
- * Methods modify this fraction and return it unless stated otherwise.
  */
 class Fraction {
     /**
@@ -395,9 +402,9 @@ A class has no setters. A property is assigned through a method whose name consi
 ## Parameters
 
 - Boolean parameters are not used. Separate methods or an options property express the choice instead.
-- Value types take positional parameters, with default values for the optional ones. Elsewhere, a function takes an options object when it has more than three parameters or more than one optional parameter: `new ClassA({ optionA, optionB })`. A single optional parameter stands last and is positional: `methodA(target, offset = 0)`.
+- Value types take positional parameters, with default values for the optional ones. Elsewhere, a function takes an options object when it has more than three parameters or more than one optional parameter: `new ClassA({ optionA, optionB })`. A single optional parameter stands last and is positional: `methodA(array, arrayOffset = 0)`.
 - Each method has exactly one signature, so a parameter never changes the behavior of a method according to its type. Rather than accepting `ClassA | number`, a class offers two separate methods.
-- An output parameter is named `target` and is documented. When a method has several output parameters, each is named `target` followed by its noun, such as `targetPosition`.
+- An output parameter is named after the kind of object that it is, as an input parameter is, and it is documented. The name of the method states that the parameter receives a result, so the name of the parameter does not repeat it. When two parameters of one method are of the same kind, each is named after its role instead.
 
 ## Tests
 

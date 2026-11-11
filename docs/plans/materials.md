@@ -1,19 +1,15 @@
 # materials
 
-Goal: the single unlit material required by milestone 3 ([architecture.md](../architecture.md#milestones)), structured as [0019](../decisions/0019-scene-components.md) defines.
+Goal: the single unlit material required by milestone 3 ([architecture.md](../architecture.md#milestones)), structured as [0026](../decisions/0026-scene-components-and-meshes.md) defines.
 
 ## Material
 
 - [ ] `Material`, a description that holds no GPU objects
 - [ ] An unlit material that colors a surface by its normal, as `02-hierarchy` does
 
-## Component
-
-- [ ] `MaterialComponent`, which refers to a shared `Material`
-
 ## Out of scope
 
-Lighting models, textures, user-supplied WGSL.
+Lighting models, textures, user-supplied WGSL, the component of a renderable node.
 
 ## Open questions
 
