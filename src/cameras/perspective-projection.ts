@@ -4,8 +4,6 @@ import type { Matrix4 } from '../math/index.ts';
 
 /**
  * A projection in which distant objects appear smaller, defined by a field of view and two clipping distances.
- *
- * Methods that assign a property return this projection.
  */
 class PerspectiveProjection extends Projection {
     #fieldOfView: number;
@@ -117,7 +115,7 @@ class PerspectiveProjection extends Projection {
     /**
      * Computes the matrix of this projection for the given aspect ratio into the given matrix.
      *
-     * @param target - The destination matrix.
+     * @param matrix - The destination matrix.
      * @param aspectRatio - The ratio of the width of the render target to its height.
      *
      * @returns The given matrix.
@@ -125,8 +123,8 @@ class PerspectiveProjection extends Projection {
      * @remarks The matrix maps the near clipping plane to a depth of 1 and the far clipping plane to a depth of 0.
      * @remarks An aspect ratio of zero leaves the given matrix unchanged, and so do equal clipping distances.
      */
-    computeMatrixInto(target: Matrix4, aspectRatio: number) {
-        return target.perspective(this.#fieldOfView, aspectRatio, this.#nearDistance, this.#farDistance);
+    computeMatrixInto(matrix: Matrix4, aspectRatio: number) {
+        return matrix.perspective(this.#fieldOfView, aspectRatio, this.#nearDistance, this.#farDistance);
     }
 }
 

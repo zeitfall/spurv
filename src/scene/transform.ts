@@ -86,15 +86,15 @@ class Transform {
     /**
      * Copies the local matrix of this transform into the given matrix.
      *
-     * @param target - The destination matrix.
+     * @param matrix - The destination matrix.
      *
      * @returns The given matrix.
      *
      * @remarks The local matrix is recomputed only by an update, so changes to the position, rotation,
      * or scale made since the last update are not reflected.
      */
-    copyLocalMatrixTo(target: Matrix4) {
-        return target.copy(this.#localMatrix);
+    copyLocalMatrixTo(matrix: Matrix4) {
+        return matrix.copy(this.#localMatrix);
     }
 }
 

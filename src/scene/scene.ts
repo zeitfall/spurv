@@ -1,5 +1,5 @@
 import { SceneNode } from './scene-node.ts';
-import { sceneRoots } from './scene-roots.ts';
+import { addSceneRoot } from './scene-roots.ts';
 
 /**
  * A hierarchy of nodes that descend from a single root node.
@@ -13,7 +13,7 @@ class Scene {
     constructor() {
         this.#root = new SceneNode();
 
-        sceneRoots.add(this.#root);
+        addSceneRoot(this.#root);
     }
 
     /**

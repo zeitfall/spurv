@@ -1,11 +1,11 @@
 import { RenderDeviceBuffer } from './render-device-buffer.ts';
 import { RenderDeviceTexture } from './render-device-texture.ts';
 
-const RenderDeviceEventType = {
+const RenderDeviceEventType = Object.freeze({
     DEVICE_LOST: 'devicelost',
     UNCAPTURED_ERROR: 'uncapturederror',
     COMPILATION_ERROR: 'compilationerror',
-} as const;
+});
 
 interface RenderDeviceOptions {
     adapterOptions?: GPURequestAdapterOptions;
