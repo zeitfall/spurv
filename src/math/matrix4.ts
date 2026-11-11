@@ -3,8 +3,6 @@ import type { Quaternion } from './quaternion.ts';
 
 /**
  * A four-by-four matrix stored in column-major order.
- *
- * Methods modify this matrix and return it unless stated otherwise.
  */
 class Matrix4 {
     #elements: Float64Array;
@@ -132,16 +130,16 @@ class Matrix4 {
      * Sets this matrix to the elements read in column-major order from the given array.
      *
      * @param array - The source array.
-     * @param offset - The index of the first element.
+     * @param arrayOffset - The index of the first element.
      *
      * @remarks An absent element is read from the identity matrix.
      */
-    setFromArray(array: ArrayLike<number>, offset = 0) {
+    setFromArray(array: ArrayLike<number>, arrayOffset = 0) {
         return this.set(
-            array[offset + 0] ?? 1, array[offset + 4] ?? 0, array[offset + 8] ?? 0, array[offset + 12] ?? 0,
-            array[offset + 1] ?? 0, array[offset + 5] ?? 1, array[offset + 9] ?? 0, array[offset + 13] ?? 0,
-            array[offset + 2] ?? 0, array[offset + 6] ?? 0, array[offset + 10] ?? 1, array[offset + 14] ?? 0,
-            array[offset + 3] ?? 0, array[offset + 7] ?? 0, array[offset + 11] ?? 0, array[offset + 15] ?? 1,
+            array[arrayOffset + 0] ?? 1, array[arrayOffset + 4] ?? 0, array[arrayOffset + 8] ?? 0, array[arrayOffset + 12] ?? 0,
+            array[arrayOffset + 1] ?? 0, array[arrayOffset + 5] ?? 1, array[arrayOffset + 9] ?? 0, array[arrayOffset + 13] ?? 0,
+            array[arrayOffset + 2] ?? 0, array[arrayOffset + 6] ?? 0, array[arrayOffset + 10] ?? 1, array[arrayOffset + 14] ?? 0,
+            array[arrayOffset + 3] ?? 0, array[arrayOffset + 7] ?? 0, array[arrayOffset + 11] ?? 0, array[arrayOffset + 15] ?? 1,
         );
     }
 
@@ -478,48 +476,48 @@ class Matrix4 {
     /**
      * Writes the elements of this matrix in column-major order into the given array.
      *
-     * @param target - The destination array.
-     * @param offset - The index of the first element.
+     * @param array - The destination array.
+     * @param arrayOffset - The index of the first element.
      *
      * @returns The given array.
      */
-    writeToArray(target: ArrayLike<number>, offset = 0) {
+    writeToArray(array: ArrayLike<number>, arrayOffset = 0) {
         const m = this.#elements;
 
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 0] = m[0];
+        array[arrayOffset + 0] = m[0];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 1] = m[1];
+        array[arrayOffset + 1] = m[1];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 2] = m[2];
+        array[arrayOffset + 2] = m[2];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 3] = m[3];
+        array[arrayOffset + 3] = m[3];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 4] = m[4];
+        array[arrayOffset + 4] = m[4];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 5] = m[5];
+        array[arrayOffset + 5] = m[5];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 6] = m[6];
+        array[arrayOffset + 6] = m[6];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 7] = m[7];
+        array[arrayOffset + 7] = m[7];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 8] = m[8];
+        array[arrayOffset + 8] = m[8];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 9] = m[9];
+        array[arrayOffset + 9] = m[9];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 10] = m[10];
+        array[arrayOffset + 10] = m[10];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 11] = m[11];
+        array[arrayOffset + 11] = m[11];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 12] = m[12];
+        array[arrayOffset + 12] = m[12];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 13] = m[13];
+        array[arrayOffset + 13] = m[13];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 14] = m[14];
+        array[arrayOffset + 14] = m[14];
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 15] = m[15];
+        array[arrayOffset + 15] = m[15];
 
-        return target;
+        return array;
     }
 
     // Private ----------------------------------------------------------------

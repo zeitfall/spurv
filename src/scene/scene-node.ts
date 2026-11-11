@@ -1,15 +1,13 @@
 import { Matrix4 } from '../math/index.ts';
 
-import { sceneComponentNodes } from './scene-component-nodes.ts';
-import { sceneRoots } from './scene-roots.ts';
+import { setSceneComponentNode, deleteSceneComponentNode } from './scene-component-nodes.ts';
+import { hasSceneRoot } from './scene-roots.ts';
 import { Transform } from './transform.ts';
 
 import type { SceneComponent } from './scene-component.ts';
 
 /**
  * A node of a scene hierarchy, positioned relative to its parent and holding an ordered list of children.
- *
- * Methods that add or remove children or components return this node.
  */
 class SceneNode {
     #parent: SceneNode | null;
@@ -78,7 +76,7 @@ class SceneNode {
      * that is already a child of this node moves to the end.
      */
     addChild(child: SceneNode) {
-        if (sceneRoots.has(child)) {
+        if (hasSceneRoot(child)) {
             throw new RangeError('SceneNode.addChild: expected a node that is not a scene root, received a scene root.');
         }
 
@@ -159,7 +157,7 @@ class SceneNode {
             throw new RangeError('SceneNode.addComponent: expected a component of a class that this node does not hold, received a component of a class that it holds.');
         }
 
-        sceneComponentNodes.set(component, this);
+        setSceneComponentNode(component, this);
         this.#components.set(component.constructor, component);
 
         return this;
@@ -179,7 +177,7 @@ class SceneNode {
             throw new RangeError('SceneNode.removeComponent: expected a component of this node, received a component that is not attached to it.');
         }
 
-        sceneComponentNodes.delete(component);
+        deleteSceneComponentNode(component);
         this.#components.delete(component.constructor);
 
         return this;
@@ -226,30 +224,30 @@ class SceneNode {
     /**
      * Copies the world matrix of this node into the given matrix.
      *
-     * @param target - The destination matrix.
+     * @param matrix - The destination matrix.
      *
      * @returns The given matrix.
      *
      * @remarks The world matrix is recomputed only by an update, so changes to the transforms made
      * since the last update are not reflected.
      */
-    copyWorldMatrixTo(target: Matrix4) {
-        return target.copy(this.#worldMatrix);
+    copyWorldMatrixTo(matrix: Matrix4) {
+        return matrix.copy(this.#worldMatrix);
     }
 
     /**
      * Writes the world matrix of this node into the given array, in column-major order.
      *
-     * @param target - The destination array.
-     * @param offset - The index of the first element.
+     * @param array - The destination array.
+     * @param arrayOffset - The index of the first element.
      *
      * @returns The given array.
      *
      * @remarks The world matrix is recomputed only by an update, so changes to the transforms made
      * since the last update are not reflected.
      */
-    writeWorldMatrixToArray(target: ArrayLike<number>, offset = 0) {
-        return this.#worldMatrix.writeToArray(target, offset);
+    writeWorldMatrixToArray(array: ArrayLike<number>, arrayOffset = 0) {
+        return this.#worldMatrix.writeToArray(array, arrayOffset);
     }
 
     /**

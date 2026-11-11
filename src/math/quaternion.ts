@@ -4,8 +4,6 @@ import type { Vector3 } from './vector3.ts';
 
 /**
  * A unit quaternion representing a rotation in three-dimensional space.
- *
- * Methods modify this quaternion and return it unless stated otherwise.
  */
 class Quaternion {
     x: number;
@@ -72,16 +70,16 @@ class Quaternion {
      * Sets this quaternion to the components read from the given array.
      *
      * @param array - The source array.
-     * @param offset - The index of the x component.
+     * @param arrayOffset - The index of the x component.
      *
      * @remarks An absent x, y, or z element is read as zero, and an absent w as one.
      */
-    setFromArray(array: ArrayLike<number>, offset = 0) {
+    setFromArray(array: ArrayLike<number>, arrayOffset = 0) {
         return this.set(
-            array[offset + 0] ?? 0,
-            array[offset + 1] ?? 0,
-            array[offset + 2] ?? 0,
-            array[offset + 3] ?? 1,
+            array[arrayOffset + 0] ?? 0,
+            array[arrayOffset + 1] ?? 0,
+            array[arrayOffset + 2] ?? 0,
+            array[arrayOffset + 3] ?? 1,
         );
     }
 
@@ -291,22 +289,22 @@ class Quaternion {
     /**
      * Writes the components of this quaternion into the given array.
      *
-     * @param target - The destination array.
-     * @param offset - The index of the x component.
+     * @param array - The destination array.
+     * @param arrayOffset - The index of the x component.
      *
      * @returns The given array.
      */
-    writeToArray(target: ArrayLike<number>, offset = 0) {
+    writeToArray(array: ArrayLike<number>, arrayOffset = 0) {
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 0] = this.x;
+        array[arrayOffset + 0] = this.x;
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 1] = this.y;
+        array[arrayOffset + 1] = this.y;
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 2] = this.z;
+        array[arrayOffset + 2] = this.z;
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 3] = this.w;
+        array[arrayOffset + 3] = this.w;
 
-        return target;
+        return array;
     }
 
     // Private ----------------------------------------------------------------

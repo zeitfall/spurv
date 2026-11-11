@@ -7,12 +7,12 @@ abstract class Projection {
     /**
      * Computes the matrix of this projection for the given aspect ratio into the given matrix.
      *
-     * @param target - The destination matrix.
+     * @param matrix - The destination matrix.
      * @param aspectRatio - The ratio of the width of the render target to its height.
      *
      * @returns The given matrix.
      */
-    abstract computeMatrixInto(target: Matrix4, aspectRatio: number): Matrix4;
+    abstract computeMatrixInto(matrix: Matrix4, aspectRatio: number): Matrix4;
 }
 
 export { Projection };

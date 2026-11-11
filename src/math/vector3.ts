@@ -2,8 +2,6 @@ import { lerp } from './scalar.ts';
 
 /**
  * A vector in three-dimensional space.
- *
- * Methods modify this vector and return it unless stated otherwise.
  */
 class Vector3 {
     x: number;
@@ -58,15 +56,15 @@ class Vector3 {
      * Sets this vector to the components read from the given array.
      *
      * @param array - The source array.
-     * @param offset - The index of the x component.
+     * @param arrayOffset - The index of the x component.
      *
      * @remarks An element absent from the array is read as zero.
      */
-    setFromArray(array: ArrayLike<number>, offset = 0) {
+    setFromArray(array: ArrayLike<number>, arrayOffset = 0) {
         return this.set(
-            array[offset + 0] ?? 0,
-            array[offset + 1] ?? 0,
-            array[offset + 2] ?? 0,
+            array[arrayOffset + 0] ?? 0,
+            array[arrayOffset + 1] ?? 0,
+            array[arrayOffset + 2] ?? 0,
         );
     }
 
@@ -230,20 +228,20 @@ class Vector3 {
     /**
      * Writes the components of this vector into the given array.
      *
-     * @param target - The destination array.
-     * @param offset - The index of the x component.
+     * @param array - The destination array.
+     * @param arrayOffset - The index of the x component.
      *
      * @returns The given array.
      */
-    writeToArray(target: ArrayLike<number>, offset = 0) {
+    writeToArray(array: ArrayLike<number>, arrayOffset = 0) {
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 0] = this.x;
+        array[arrayOffset + 0] = this.x;
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 1] = this.y;
+        array[arrayOffset + 1] = this.y;
         // @ts-expect-error TS2542: ArrayLike<number> is read-only.
-        target[offset + 2] = this.z;
+        array[arrayOffset + 2] = this.z;
 
-        return target;
+        return array;
     }
 }
 
