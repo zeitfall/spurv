@@ -82,4 +82,6 @@ Documents, comments, string literals, commit messages, and PR titles and bodies 
 
 Instructions, that is, this file, the code style, and the workflow rules for ADRs and plans, are written so that they would apply unchanged to another project. They name no class, module, or function of the library; where an example is unavoidable, it uses placeholder names such as `ClassA` or `variableA`.
 
+The code style and the API conventions state each rule once and in its final form. They give no reason for a rule and mention neither an alternative nor an earlier rule. A reason that is worth keeping is recorded in an ADR.
+
 Each fact is stated in exactly one file, and other files link to it. The role of each document is listed in the [README](README.md#documentation), and the criteria for when an ADR is required are given in [docs/decisions/README.md](docs/decisions/README.md).
