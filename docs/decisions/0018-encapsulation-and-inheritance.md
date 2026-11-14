@@ -13,7 +13,7 @@ The TypeScript modifiers `readonly` and `private` exist only at compile time, so
 
 ## Decision
 
-Every field of a class that is not a math value type ([0005](0005-math-conventions.md)) is a `#private` field, exposed through getters and setters as needed, and the TypeScript modifiers `readonly` and `private` are never relied on for protection. Internal collections are never returned, so access to them goes through methods and iterators such as `children()`. The modifier `protected` is an exception that is justified in the TSDoc `@remarks` of the member.
+Every field of a class that is not a math value type ([0005](0005-math-conventions.md)) is a `#private` field, exposed through getters and assigned through methods as needed, and the TypeScript modifiers `readonly` and `private` are never relied on for protection. Internal collections are never returned, so access to them goes through methods and iterators such as `children()`. The modifier `protected` is an exception that is justified in the TSDoc `@remarks` of the member.
 
 Inheritance is permitted in two forms. The first is a contract inside a module, such as `Projection`, in which an abstract base owns its state and calls abstract hooks that its subclasses implement. The second is the extension of `SceneComponent` by a class of any module. Such a class extends `SceneComponent` directly and is not extended further, because the component model finds a component by its exact class. The second form crosses a module boundary, and it is acceptable because the contract consists of a single read-only property.
 

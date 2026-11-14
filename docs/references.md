@@ -1,6 +1,6 @@
 # References
 
-External projects are sources of knowledge, not of authority. A decision is therefore justified by its own reasoning, recorded in an ADR, in `code-style.md`, or in `api-conventions.md`, and never by the fact that another project does the same. A borrowed idea names its source, as [0004](decisions/0004-frame-phases.md) does for Bevy. Sources are cited in ADRs and plans, and never in code; a test that takes an expected value from a source relies on the citation in the corresponding plan or ADR.
+External projects are sources of knowledge, not of authority. A decision is therefore justified by its own reasoning, recorded in an ADR, and never by the fact that another project does the same. A borrowed idea names its source, as [0004](decisions/0004-frame-phases.md) does for Bevy. Sources are cited in ADRs and plans, and never in code; a test that takes an expected value from a source relies on the citation in the corresponding plan or ADR.
 
 | Domain               | Sources                                                                                                        |
 | -------------------- | -------------------------------------------------------------------------------------------------------------- |
