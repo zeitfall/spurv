@@ -1,6 +1,6 @@
-import { Projection } from './projection.ts';
-
 import type { Matrix4 } from '../math/index.ts';
+
+import { Projection } from './projection.ts';
 
 /**
  * A projection in which distant objects appear smaller, defined by a field of view and two clipping distances.

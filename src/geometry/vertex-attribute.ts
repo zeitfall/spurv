@@ -1,6 +1,7 @@
 import { setVertexAttributeArray } from './vertex-attribute-arrays.ts';
+import { getVertexFormatComponentCount } from './vertex-format-component-counts.ts';
+import { getVertexFormatTypedArray } from './vertex-format-typed-arrays.ts';
 import { VertexFormat } from './vertex-format.ts';
-import { VERTEX_FORMAT_COMPONENT_COUNT_MAP, VERTEX_FORMAT_TYPED_ARRAY_MAP } from './vertex-format-maps.ts';
 
 import type { VertexAttributeArray } from './types.ts';
 
@@ -31,7 +32,7 @@ class VertexAttribute {
             throw new RangeError(`VertexAttribute.constructor: expected a vertex format, received ${format}.`);
         }
 
-        this.#array = VERTEX_FORMAT_TYPED_ARRAY_MAP[format].from(array);
+        this.#array = getVertexFormatTypedArray(format).from(array);
         this.#format = format;
 
         if (array.length === 0 || array.length % this.#componentCountPerFormat !== 0) {
@@ -67,7 +68,7 @@ class VertexAttribute {
     }
 
     get #componentCountPerFormat() {
-        return VERTEX_FORMAT_COMPONENT_COUNT_MAP[this.#format];
+        return getVertexFormatComponentCount(this.#format);
     }
 
     // Assignment -------------------------------------------------------------

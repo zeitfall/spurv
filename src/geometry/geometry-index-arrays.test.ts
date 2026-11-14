@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { getGeometryIndexArray, setGeometryIndexArray, deleteGeometryIndexArray } from './geometry-index-arrays.ts';
 import { Geometry } from './geometry.ts';
+
+import {
+    getGeometryIndexArray,
+    setGeometryIndexArray,
+    deleteGeometryIndexArray,
+} from './geometry-index-arrays.ts';
 
 describe('getGeometryIndexArray()', () => {
     it('returns null for a geometry without indices', () => {

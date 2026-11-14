@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { clamp, lerp, inverseLerp } from './scalar.ts';
+import {
+    clamp,
+    lerp,
+    inverseLerp,
+} from './scalar.ts';
 
 import { assertClose } from '../testing/index.ts';
 

@@ -1,4 +1,11 @@
-import { degreesToRadians, clamp, Vector3, Matrix4, SceneNode, Scene } from 'spurv';
+import {
+    Vector3,
+    Matrix4,
+    degreesToRadians,
+    clamp,
+    Scene,
+    SceneNode,
+} from 'spurv';
 
 const CAMERA_PITCH_AXIS = Object.freeze(new Vector3(1, 0, 0));
 const CAMERA_PITCH_ANGLE = degreesToRadians(-40);

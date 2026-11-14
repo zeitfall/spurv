@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { Geometry } from './geometry.ts';
+import { VertexAttribute } from './vertex-attribute.ts';
 import { getGeometryIndexArray } from './geometry-index-arrays.ts';
 import { VertexAttributeName } from './vertex-attribute-name.ts';
 import { VertexFormat } from './vertex-format.ts';
-import { VertexAttribute } from './vertex-attribute.ts';
-import { Geometry } from './geometry.ts';
 
 function createPositions(vertexCount: number) {
     return new VertexAttribute(new Array(3 * vertexCount).fill(1), VertexFormat.FLOAT32X3);

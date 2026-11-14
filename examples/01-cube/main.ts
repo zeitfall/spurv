@@ -1,4 +1,10 @@
-import { degreesToRadians, clamp, Vector3, Quaternion, Matrix4 } from 'spurv';
+import {
+    Vector3,
+    Quaternion,
+    Matrix4,
+    degreesToRadians,
+    clamp,
+} from 'spurv';
 
 const CAMERA_FIELD_OF_VIEW = degreesToRadians(60);
 const CAMERA_NEAR_DISTANCE = 0.1;

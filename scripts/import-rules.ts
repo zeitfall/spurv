@@ -1,4 +1,8 @@
-import { basename, dirname, join } from 'node:path/posix';
+import {
+    basename,
+    dirname,
+    join,
+} from 'node:path/posix';
 
 type ImportRule =
     | 'cycle'
@@ -10,6 +14,7 @@ type ImportRule =
     | 'module-layer'
     | 'own-index'
     | 'testing'
+    | 'type-modifier'
     | 'webgpu';
 
 type MaskState = 'code' | 'line-comment' | 'block-comment' | '\'' | '"' | '`';
@@ -53,6 +58,7 @@ const COMMENT_STATES: readonly MaskState[] = Object.freeze(['line-comment', 'blo
 const LAYER_ROW_PATTERN = Object.freeze(/^\|\s*(\d+)\s*\|\s*`([a-z0-9-]+)`\s*\|/gm);
 const IMPORT_PATTERN = Object.freeze(/^(import|export)(\s+type)?\b(?:[^;']*?\bfrom)?\s*'([^']*)'/gm);
 const DYNAMIC_IMPORT_PATTERN = Object.freeze(/\bimport\s*\(/g);
+const NAME_LIST_PATTERN = Object.freeze(/^(?:import|export)\s*\{([^}]*)\}\s*from\b/gm);
 const WEBGPU_PATTERN = Object.freeze(/\bGPU(?:[A-Z]\w*)?\b|\bnavigator\.gpu\b/g);
 
 function checkImports(files: readonly SourceFile[], architecture: string) {
@@ -118,6 +124,21 @@ function checkFile(file: SourceFile, layers: ReadonlyMap<string, number>) {
                 message: `expected no WebGPU API outside gpu and renderer, received ${match[0]}.`,
             });
         }
+    }
+
+    for (const match of maskedText.matchAll(NAME_LIST_PATTERN)) {
+        const names = match[1].split(',').map((name) => name.trim()).filter((name) => name !== '');
+
+        if (names.length === 0 || names.some((name) => hasTypeModifier(name) === false)) {
+            continue;
+        }
+
+        violations.push({
+            path: file.path,
+            line: findLine(maskedText, match.index),
+            rule: 'type-modifier',
+            message: 'expected import type for names that are all types, received a type modifier on each name.',
+        });
     }
 
     for (const statement of findImports(file.text)) {
@@ -226,6 +247,12 @@ function findModule(path: string) {
     }
 
     return moduleName;
+}
+
+function hasTypeModifier(name: string) {
+    const words = name.split(/\s+/);
+
+    return words[0] === 'type' && words.length % 2 === 0;
 }
 
 function findLine(text: string, index: number) {
