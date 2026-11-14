@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { Vector3, Quaternion, Matrix4 } from '../math/index.ts';
+import {
+    Vector3,
+    Quaternion,
+    Matrix4,
+} from '../math/index.ts';
 
 import { Transform } from './transform.ts';
 

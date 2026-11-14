@@ -1,5 +1,5 @@
-import type { SceneComponent } from './scene-component.ts';
 import type { SceneNode } from './scene-node.ts';
+import type { SceneComponent } from './scene-component.ts';
 
 const sceneComponentNodes = new WeakMap<SceneComponent, SceneNode>();
 
@@ -15,4 +15,8 @@ function deleteSceneComponentNode(component: SceneComponent) {
     sceneComponentNodes.delete(component);
 }
 
-export { getSceneComponentNode, setSceneComponentNode, deleteSceneComponentNode };
+export {
+    getSceneComponentNode,
+    setSceneComponentNode,
+    deleteSceneComponentNode,
+};

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { VertexFormat } from './vertex-format.ts';
 import { VertexAttribute } from './vertex-attribute.ts';
+import { VertexFormat } from './vertex-format.ts';
 
 function createAttributeA() {
     return new VertexAttribute([1, 2, 3, 4, 5, 6], VertexFormat.FLOAT32X3);

@@ -1,4 +1,5 @@
 import { Matrix4 } from '../math/index.ts';
+
 import { SceneComponent } from '../scene/index.ts';
 
 import type { Projection } from './projection.ts';

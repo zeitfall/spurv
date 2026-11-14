@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { VertexAttribute } from './vertex-attribute.ts';
 import { getVertexAttributeArray, setVertexAttributeArray } from './vertex-attribute-arrays.ts';
 import { VertexFormat } from './vertex-format.ts';
-import { VertexAttribute } from './vertex-attribute.ts';
 
 describe('getVertexAttributeArray()', () => {
     it('returns the array that holds the components of the attribute', () => {

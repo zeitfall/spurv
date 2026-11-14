@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { Vector3, Matrix4 } from '../math/index.ts';
+
 import { SceneNode } from '../scene/index.ts';
 
-import { Projection } from './projection.ts';
 import { Camera } from './camera.ts';
+import { Projection } from './projection.ts';
 import { PerspectiveProjection } from './perspective-projection.ts';
 
 import { assertClose, assertArrayClose } from '../testing/index.ts';

@@ -1,4 +1,8 @@
-import { Vector3, Quaternion, Matrix4 } from '../math/index.ts';
+import {
+    Vector3,
+    Quaternion,
+    Matrix4,
+} from '../math/index.ts';
 
 /**
  * A placement of a scene node relative to its parent, composed of a position, a rotation, and a scale.

@@ -1,5 +1,10 @@
 import { readdir, readFile } from 'node:fs/promises';
-import { join, resolve, sep } from 'node:path';
+
+import {
+    join,
+    resolve,
+    sep,
+} from 'node:path';
 
 import { ARCHITECTURE_PATH, checkImports } from './import-rules.ts';
 

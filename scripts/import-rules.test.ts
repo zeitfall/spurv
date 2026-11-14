@@ -190,6 +190,37 @@ describe('checkImports()', () => {
         assert.deepEqual(findRules(files), ['module-entry', 'module-entry']);
     });
 
+    it('reports an import whose names all carry the type modifier', () => {
+        const files = [{ path: 'src/scene/scene.ts', text: 'import { type SceneNode } from \'./scene-node.ts\';' }];
+
+        assert.deepEqual(findRules(files), ['type-modifier']);
+    });
+
+    it('reports a re-export whose names all carry the type modifier', () => {
+        const text = [
+            'export {',
+            '    type InterfaceA,',
+            '    type InterfaceB,',
+            '} from \'./types.ts\';',
+        ].join('\n');
+
+        const files = [{ path: 'src/scene/index.ts', text }];
+
+        assert.deepEqual(findRules(files), ['type-modifier']);
+    });
+
+    it('accepts a type modifier beside a name that is a value', () => {
+        const files = [{ path: 'src/scene/scene.ts', text: 'import { NodeA, type NodeB } from \'./node.ts\';' }];
+
+        assert.deepEqual(findRules(files), []);
+    });
+
+    it('accepts a value that is named type', () => {
+        const files = [{ path: 'src/scene/scene.ts', text: 'import { type as kind } from \'./scene-node.ts\';' }];
+
+        assert.deepEqual(findRules(files), []);
+    });
+
     it('reports the line of the import', () => {
         const text = [
             'import { Vector3 } from \'../math/index.ts\';',

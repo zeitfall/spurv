@@ -3,8 +3,8 @@ import { describe, it } from 'node:test';
 
 import { Matrix4 } from '../math/index.ts';
 
-import { SceneNode } from './scene-node.ts';
 import { Scene } from './scene.ts';
+import { SceneNode } from './scene-node.ts';
 
 import { assertArrayClose } from '../testing/index.ts';
 

@@ -1,8 +1,8 @@
 import { Matrix4 } from '../math/index.ts';
 
+import { Transform } from './transform.ts';
 import { setSceneComponentNode, deleteSceneComponentNode } from './scene-component-nodes.ts';
 import { hasSceneRoot } from './scene-roots.ts';
-import { Transform } from './transform.ts';
 
 import type { SceneComponent } from './scene-component.ts';
 

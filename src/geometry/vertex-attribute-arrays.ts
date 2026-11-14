@@ -1,5 +1,5 @@
-import type { VertexAttributeArray } from './types.ts';
 import type { VertexAttribute } from './vertex-attribute.ts';
+import type { VertexAttributeArray } from './types.ts';
 
 const vertexAttributeArrays = new WeakMap<VertexAttribute, VertexAttributeArray>();
 

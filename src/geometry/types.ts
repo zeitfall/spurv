@@ -1,6 +1,5 @@
-import type { VertexFormat } from './vertex-format.ts';
-import type { VERTEX_FORMAT_TYPED_ARRAY_MAP } from './vertex-format-maps.ts';
+import type { getVertexFormatTypedArray } from './vertex-format-typed-arrays.ts';
 
-type VertexAttributeArray = InstanceType<(typeof VERTEX_FORMAT_TYPED_ARRAY_MAP)[VertexFormat]>;
+type VertexAttributeArray = InstanceType<ReturnType<typeof getVertexFormatTypedArray>>;
 
 export type { VertexAttributeArray };

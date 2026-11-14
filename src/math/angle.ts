@@ -16,7 +16,4 @@ function radiansToDegrees(radians: number) {
     return (180 / Math.PI) * radians;
 }
 
-export {
-    degreesToRadians,
-    radiansToDegrees,
-};
+export { degreesToRadians, radiansToDegrees };

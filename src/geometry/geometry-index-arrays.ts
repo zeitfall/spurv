@@ -24,4 +24,8 @@ function deleteGeometryIndexArray(geometry: Geometry) {
     geometryIndexArrays.delete(geometry);
 }
 
-export { getGeometryIndexArray, setGeometryIndexArray, deleteGeometryIndexArray };
+export {
+    getGeometryIndexArray,
+    setGeometryIndexArray,
+    deleteGeometryIndexArray,
+};

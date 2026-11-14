@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { SceneComponent } from './scene-component.ts';
 import { SceneNode } from './scene-node.ts';
+import { SceneComponent } from './scene-component.ts';
 
 class ComponentA extends SceneComponent {}
 
