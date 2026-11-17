@@ -1,13 +1,23 @@
 import assert from 'node:assert/strict';
-import { after, afterEach, before, describe, it } from 'node:test';
+
+import {
+    after,
+    afterEach,
+    before,
+    describe,
+    it,
+} from 'node:test';
 
 import { RenderDevice } from './render-device.ts';
+import { RenderDeviceState } from './render-device-state.ts';
 
 interface FakeCall {
     method: string;
     argument: unknown;
     result: object;
 }
+
+const PREFERRED_CANVAS_FORMAT = 'rgba8unorm';
 
 function settle() {
     return new Promise((resolve) => {
@@ -101,7 +111,7 @@ function createFakeDevice(compilationMessages: object[] = []) {
 
     return {
         gpuDevice,
-        device: new RenderDevice(gpuDevice),
+        device: new RenderDevice(gpuDevice, PREFERRED_CANVAS_FORMAT),
         calls,
         loseDevice,
         emitUncapturedError,
@@ -115,7 +125,7 @@ function createFakeCanvas(context: object | null) {
 describe('RenderDevice', () => {
     before(() => {
         Object.assign(globalThis, {
-            GPUBufferUsage: { COPY_SRC: 4, COPY_DST: 8, INDEX: 16, VERTEX: 32, UNIFORM: 64 },
+            GPUBufferUsage: { COPY_SRC: 4, COPY_DST: 8, INDEX: 16, VERTEX: 32, UNIFORM: 64, STORAGE: 128 },
             GPUTextureUsage: { TEXTURE_BINDING: 4, RENDER_ATTACHMENT: 16 },
         });
     });
@@ -154,6 +164,7 @@ describe('RenderDevice', () => {
             const receivedDeviceDescriptors: unknown[] = [];
 
             stubNavigatorGPU({
+                getPreferredCanvasFormat: () => PREFERRED_CANVAS_FORMAT,
                 requestAdapter: async (options: unknown) => {
                     receivedAdapterOptions.push(options);
 
@@ -174,6 +185,19 @@ describe('RenderDevice', () => {
             assert.equal(receivedDeviceDescriptors[0], deviceDescriptor);
         });
 
+        it('reads the preferred canvas format from WebGPU', async () => {
+            const { gpuDevice } = createFakeDevice();
+
+            stubNavigatorGPU({
+                getPreferredCanvasFormat: () => 'bgra8unorm',
+                requestAdapter: async () => ({ requestDevice: async () => gpuDevice }),
+            });
+
+            const device = await RenderDevice.create();
+
+            assert.equal(device.preferredCanvasFormat, 'bgra8unorm');
+        });
+
         it('propagates a rejection of the device request', async () => {
             const failure = new Error('unsupported feature');
 
@@ -186,6 +210,91 @@ describe('RenderDevice', () => {
             });
 
             await assert.rejects(() => RenderDevice.create(), failure);
+        });
+    });
+
+    describe('preferredCanvasFormat', () => {
+        it('exposes the format given at the creation', () => {
+            const { device } = createFakeDevice();
+
+            assert.equal(device.preferredCanvasFormat, PREFERRED_CANVAS_FORMAT);
+        });
+
+        it('throws on assignment', () => {
+            const { device } = createFakeDevice();
+
+            assert.throws(() => Object.assign(device, { preferredCanvasFormat: 'bgra8unorm' }), TypeError);
+        });
+    });
+
+    describe('state', () => {
+        it('is active after the creation', () => {
+            const { device } = createFakeDevice();
+
+            assert.equal(device.state, RenderDeviceState.ACTIVE);
+        });
+
+        it('is lost after an unexpected loss of the device', async () => {
+            const { device, loseDevice } = createFakeDevice();
+
+            loseDevice('unknown');
+            await settle();
+
+            assert.equal(device.state, RenderDeviceState.LOST);
+        });
+
+        it('is lost while the loss is reported', async () => {
+            const { device, loseDevice } = createFakeDevice();
+            const states: string[] = [];
+
+            device.addEventListener('devicelost', () => {
+                states.push(device.state);
+            });
+
+            loseDevice('unknown');
+            await settle();
+
+            assert.deepEqual(states, [RenderDeviceState.LOST]);
+        });
+
+        it('is destroyed at once after destroy()', () => {
+            const { device } = createFakeDevice();
+
+            device.destroy();
+
+            assert.equal(device.state, RenderDeviceState.DESTROYED);
+        });
+
+        it('is destroyed after destroy() of a lost device', async () => {
+            const { device, loseDevice } = createFakeDevice();
+
+            loseDevice('unknown');
+            await settle();
+            device.destroy();
+
+            assert.equal(device.state, RenderDeviceState.DESTROYED);
+        });
+
+        it('remains destroyed when a loss arrives after destroy()', async () => {
+            const { device, loseDevice } = createFakeDevice();
+            const reasons: string[] = [];
+
+            device.addEventListener('devicelost', (event) => {
+                reasons.push(event.detail.reason);
+            });
+
+            device.destroy();
+            loseDevice('unknown');
+            await settle();
+
+            assert.equal(device.state, RenderDeviceState.DESTROYED);
+            assert.deepEqual(reasons, []);
+        });
+
+        it('throws on assignment', () => {
+            const { device } = createFakeDevice();
+
+            assert.throws(() => Object.assign(device, { state: RenderDeviceState.LOST }), TypeError);
         });
     });
 
@@ -261,7 +370,7 @@ describe('RenderDevice', () => {
     });
 
     describe('createCanvasContext()', () => {
-        it('configures the context with the device and returns it', () => {
+        it('configures the context with the device and the preferred format and returns it', () => {
             const { gpuDevice, device } = createFakeDevice();
             const configurations: unknown[] = [];
             const context = {
@@ -270,16 +379,48 @@ describe('RenderDevice', () => {
                 },
             };
 
-            const result = device.createCanvasContext(createFakeCanvas(context), { format: 'bgra8unorm' });
+            const result = device.createCanvasContext(createFakeCanvas(context));
 
             assert.equal(result, context);
-            assert.deepEqual(configurations, [{ format: 'bgra8unorm', device: gpuDevice }]);
+            assert.deepEqual(configurations, [{ format: PREFERRED_CANVAS_FORMAT, device: gpuDevice }]);
+        });
+
+        it('keeps the preferred format for a configuration without a format', () => {
+            const { gpuDevice, device } = createFakeDevice();
+            const configurations: unknown[] = [];
+            const context = {
+                configure: (configuration: unknown) => {
+                    configurations.push(configuration);
+                },
+            };
+
+            device.createCanvasContext(createFakeCanvas(context), { alphaMode: 'premultiplied' });
+
+            assert.deepEqual(configurations, [
+                { format: PREFERRED_CANVAS_FORMAT, alphaMode: 'premultiplied', device: gpuDevice },
+            ]);
+        });
+
+        it('configures the context with the given configuration in place of the preferred format', () => {
+            const { gpuDevice, device } = createFakeDevice();
+            const configurations: unknown[] = [];
+            const context = {
+                configure: (configuration: unknown) => {
+                    configurations.push(configuration);
+                },
+            };
+
+            device.createCanvasContext(createFakeCanvas(context), { format: 'bgra8unorm', alphaMode: 'premultiplied' });
+
+            assert.deepEqual(configurations, [
+                { format: 'bgra8unorm', alphaMode: 'premultiplied', device: gpuDevice },
+            ]);
         });
 
         it('throws when the canvas provides no WebGPU context', () => {
             const { device } = createFakeDevice();
 
-            assert.throws(() => device.createCanvasContext(createFakeCanvas(null), { format: 'bgra8unorm' }), {
+            assert.throws(() => device.createCanvasContext(createFakeCanvas(null)), {
                 name: 'Error',
                 message: /^RenderDevice\.createCanvasContext: /,
             });
@@ -355,6 +496,30 @@ describe('RenderDevice', () => {
 
             assert.equal(result.raw, call.result);
             assert.deepEqual(call.argument, { size: 8, usage: 72, mappedAtCreation: true });
+        });
+    });
+
+    describe('createStorageBuffer()', () => {
+        it('creates a writable storage buffer of the given size', () => {
+            const { device, calls } = createFakeDevice();
+
+            const result = device.createStorageBuffer(64);
+            const call = findCall(calls, 'createBuffer');
+
+            assert.equal(result.raw, call.result);
+            assert.deepEqual(call.argument, { size: 64, usage: 136 });
+        });
+    });
+
+    describe('createStorageBufferWithData()', () => {
+        it('creates a writable storage buffer that is mapped for the given data', () => {
+            const { device, calls } = createFakeDevice();
+
+            const result = device.createStorageBufferWithData(new Float32Array(16));
+            const call = findCall(calls, 'createBuffer');
+
+            assert.equal(result.raw, call.result);
+            assert.deepEqual(call.argument, { size: 64, usage: 136, mappedAtCreation: true });
         });
     });
 

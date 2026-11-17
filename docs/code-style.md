@@ -97,8 +97,9 @@ The parts of a file appear in this order:
 3. Module constants.
 4. Side tables.
 5. Classes and functions.
-6. Scratch variables ([Scratch variables](#scratch-variables)).
-7. The export statement.
+6. The shader of the class ([Shaders](#shaders)).
+7. Scratch variables ([Scratch variables](#scratch-variables)).
+8. The export statement.
 
 A function that serves only the class of its file follows that class. In an enum object file, the type alias follows the object.
 
@@ -305,6 +306,7 @@ Return types are inferred. A return type is annotated in three cases only:
 The remaining rules are these:
 
 - An internal collection is never returned, with or without a read-only annotation ([0018](decisions/0018-encapsulation-and-inheritance.md)).
+- An object that holds only the result of a method on a hot path is not an internal collection: the instance retains the object, updates it in place, and returns it by reference ([0029](decisions/0029-render-world-and-gpu-resources.md)). The code that receives the object only reads it and does not keep it beyond the next call of the method.
 - An `interface` describes object shapes and class contracts. A `type` alias is used only for what an interface cannot express, such as unions, tuples, function types, mapped types, and conditional types.
 - A value of unknown type is typed as `unknown` and narrowed before use.
 - `any` is permitted only where it cannot be avoided, and a comment states the reason ([Comments](#comments)).
@@ -566,6 +568,7 @@ throw new RangeError(`ClassA.propertyA: expected a value in (0, 1), received ${v
 
 - Boolean parameters are not used. Separate methods or an options property express the choice.
 - Value types take positional parameters, with default values for the optional ones.
+- A `#private` method on a hot path takes positional parameters, whatever their number.
 - Any other function takes an options object when it has more than three parameters or more than one optional parameter: `new ClassA({ optionA, optionB })`.
 - A single optional parameter is positional, stands last, and has a default value: `methodA(array, arrayOffset = 0)`.
 - A method has exactly one signature. A parameter never selects the behavior of a method by its type, and each accepted type takes a separate method.
@@ -637,7 +640,8 @@ Shader code is WGSL that is kept in template literals.
 
 - Shader code is a module constant, and it is indented by one level inside its template literal.
 - A part that several shaders share is a constant whose name ends in `_SHADER_CODE`. It lives in a file of its own that is named after it: `PART_A_SHADER_CODE` lives in `part-a-shader-code.ts`.
-- A complete shader is a frozen object whose name ends in `_SHADER`. It lives in a file of its own that is named after it, and its code is a constant of the same file whose name is the name of the shader followed by `_CODE`.
+- A complete shader is a frozen object whose name ends in `_SHADER`. It serves one class and lives in the file of that class, after the class.
+- The code of a complete shader is a constant whose name is the name of the shader followed by `_CODE`. The code directly precedes the shader, and a constant that only the code interpolates directly precedes the code.
 - A shader includes a part through an interpolation at the beginning of its code.
 - A number that TypeScript defines, such as a shader location, is interpolated and is never repeated as a literal.
 

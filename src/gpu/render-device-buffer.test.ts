@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { after, before, describe, it } from 'node:test';
+
+import {
+    after,
+    before,
+    describe,
+    it,
+} from 'node:test';
 
 import { RenderDeviceBuffer } from './render-device-buffer.ts';
 
@@ -114,10 +120,10 @@ describe('RenderDeviceBuffer', () => {
             assert.equal(bufferAt(buffers, 0).usage, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
         });
 
-        it('keeps a size that is not a multiple of 4', () => {
+        it('rounds the size up to a multiple of 4', () => {
             const { buffers } = createSubject(6);
 
-            assert.equal(bufferAt(buffers, 0).size, 6);
+            assert.equal(bufferAt(buffers, 0).size, 8);
         });
     });
 
@@ -305,6 +311,24 @@ describe('RenderDeviceBuffer', () => {
             assert.equal(buffers.length, 1);
             assert.equal(bufferAt(buffers, 0).destroyCount, 0);
             assert.equal(subject.raw, bufferAt(buffers, 0));
+            assert.equal(subject.version, 0);
+        });
+
+        it('rounds the size up to a multiple of 4', () => {
+            const { buffers, subject } = createSubject(64);
+
+            subject.resize(6);
+
+            assert.equal(bufferAt(buffers, 1).size, 8);
+        });
+
+        it('leaves the buffer and the version unchanged at a size that rounds up to the current size', () => {
+            const { gpuDevice, buffers } = createFakeDevice();
+            const subject = RenderDeviceBuffer.createWithData(gpuDevice, new Uint16Array(3), GPUBufferUsage.INDEX);
+
+            subject.resize(6);
+
+            assert.equal(buffers.length, 1);
             assert.equal(subject.version, 0);
         });
 
