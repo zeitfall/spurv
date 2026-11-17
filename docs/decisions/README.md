@@ -20,47 +20,57 @@ An Accepted ADR builds only on decisions that are themselves Accepted, although 
 
 ## Context
 
-The forces that make a decision necessary, stated as connected sentences.
+The question that requires a decision, and the decisions that it builds on.
 
 ## Decision
 
-The decision itself, together with the reasoning that links it to the context.
+The statements of the decision, followed by the rejected alternatives.
 
 ## Consequences
 
-The effects of the decision, both favorable and unfavorable.
+The effects of the decision that a reader would not expect.
 ```
 
-Each section is written in connected prose under the documentation rules of [CONTRIBUTING.md](../../CONTRIBUTING.md#documentation). A sentence states a fact or a reason in full, so a bare fragment such as "Mutable classes." is expanded into a statement of what is decided and why. Conjunctions carry the reasoning from one sentence to the next. A list is used only when its items are genuinely parallel and independent, as alternatives under comparison or unrelated consequences often are, and even then each item is a complete sentence.
+An ADR is as short as its decision allows.
+
+- **Context** states the question in a few sentences. Each decision that the ADR builds on is listed as a link, followed by its topic and by the fact that is taken from it, so that the reader does not have to open it.
+- **Decision** states what is decided as a list of short statements, grouped under subheadings when it covers several topics. A reason accompanies a statement only where the statement is not obvious without it.
+- **Rejected alternatives** is the last subsection of the decision. It lists only the alternatives that were seriously considered, each with its strongest reason.
+- **Consequences** lists only the effects that a reader would not expect, together with the questions that the ADR resolves and the decisions that it defers.
+
+Every list item is a complete sentence under the documentation rules of [CONTRIBUTING.md](../../CONTRIBUTING.md#documentation).
 
 ## Index
 
-| ADR                                           | Title                                 | Status             |
-| --------------------------------------------- | ------------------------------------- | ------------------ |
-| [0001](0001-record-architecture-decisions.md) | Record architecture decisions         | Accepted           |
-| [0002](0002-webgpu-only.md)                   | WebGPU only                           | Accepted           |
-| [0003](0003-scene-graph-with-components.md)   | Scene graph with components           | Accepted           |
-| [0004](0004-frame-phases.md)                  | Frame phases and render world         | Accepted           |
-| [0005](0005-math-conventions.md)              | Math conventions                      | Accepted           |
-| [0006](0006-transform-change-tracking.md)     | Transform change tracking             | Superseded by 0015 |
-| [0007](0007-runtime-encapsulation.md)         | Runtime encapsulation and inheritance | Superseded by 0018 |
-| [0008](0008-const-objects-over-enums.md)      | Const objects instead of enums        | Superseded by 0025 |
-| [0009](0009-toolchain.md)                     | Toolchain                             | Superseded by 0017 |
-| [0010](0010-module-boundaries-and-layers.md)  | Module boundaries and layers          | Accepted           |
-| [0011](0011-colocated-tests.md)               | Colocated tests                       | Accepted           |
-| [0012](0012-examples-via-public-api.md)       | Examples via the public API           | Superseded by 0017 |
-| [0013](0013-reversed-z-depth.md)              | Reversed-Z depth                      | Accepted           |
-| [0014](0014-scene-and-scene-nodes.md)         | Scene and scene nodes                 | Accepted           |
-| [0015](0015-transform-versions.md)            | Transform versions                    | Accepted           |
-| [0016](0016-examples-on-github-pages.md)      | Examples on GitHub Pages              | Superseded by 0017 |
-| [0017](0017-toolchain-and-examples.md)        | Toolchain and examples                | Accepted           |
-| [0018](0018-encapsulation-and-inheritance.md) | Encapsulation and inheritance         | Accepted           |
-| [0019](0019-scene-components.md)              | Scene components                      | Superseded by 0026 |
-| [0020](0020-gpu-layer-scope.md)               | Scope of the GPU layer                | Accepted           |
-| [0021](0021-render-device.md)                 | Render device                         | Accepted           |
-| [0022](0022-render-device-resources.md)       | Render device resources               | Accepted           |
-| [0023](0023-camera-and-projection.md)         | Camera and projection                 | Accepted           |
-| [0024](0024-geometry-and-vertex-data.md)      | Geometry and vertex data              | Accepted           |
-| [0025](0025-frozen-enum-objects.md)           | Frozen enum objects                   | Accepted           |
-| [0026](0026-scene-components-and-meshes.md)   | Scene components and meshes           | Accepted           |
-| [0027](0027-renderer.md)                      | Renderer                              | Proposed           |
+| ADR                                            | Title                                 | Status             |
+| ---------------------------------------------- | ------------------------------------- | ------------------ |
+| [0001](0001-record-architecture-decisions.md)  | Record architecture decisions         | Accepted           |
+| [0002](0002-webgpu-only.md)                    | WebGPU only                           | Accepted           |
+| [0003](0003-scene-graph-with-components.md)    | Scene graph with components           | Accepted           |
+| [0004](0004-frame-phases.md)                   | Frame phases and render world         | Accepted           |
+| [0005](0005-math-conventions.md)               | Math conventions                      | Accepted           |
+| [0006](0006-transform-change-tracking.md)      | Transform change tracking             | Superseded by 0015 |
+| [0007](0007-runtime-encapsulation.md)          | Runtime encapsulation and inheritance | Superseded by 0018 |
+| [0008](0008-const-objects-over-enums.md)       | Const objects instead of enums        | Superseded by 0025 |
+| [0009](0009-toolchain.md)                      | Toolchain                             | Superseded by 0017 |
+| [0010](0010-module-boundaries-and-layers.md)   | Module boundaries and layers          | Accepted           |
+| [0011](0011-colocated-tests.md)                | Colocated tests                       | Accepted           |
+| [0012](0012-examples-via-public-api.md)        | Examples via the public API           | Superseded by 0017 |
+| [0013](0013-reversed-z-depth.md)               | Reversed-Z depth                      | Accepted           |
+| [0014](0014-scene-and-scene-nodes.md)          | Scene and scene nodes                 | Accepted           |
+| [0015](0015-transform-versions.md)             | Transform versions                    | Accepted           |
+| [0016](0016-examples-on-github-pages.md)       | Examples on GitHub Pages              | Superseded by 0017 |
+| [0017](0017-toolchain-and-examples.md)         | Toolchain and examples                | Accepted           |
+| [0018](0018-encapsulation-and-inheritance.md)  | Encapsulation and inheritance         | Accepted           |
+| [0019](0019-scene-components.md)               | Scene components                      | Superseded by 0026 |
+| [0020](0020-gpu-layer-scope.md)                | Scope of the GPU layer                | Accepted           |
+| [0021](0021-render-device.md)                  | Render device                         | Accepted           |
+| [0022](0022-render-device-resources.md)        | Render device resources               | Accepted           |
+| [0023](0023-camera-and-projection.md)          | Camera and projection                 | Accepted           |
+| [0024](0024-geometry-and-vertex-data.md)       | Geometry and vertex data              | Accepted           |
+| [0025](0025-frozen-enum-objects.md)            | Frozen enum objects                   | Accepted           |
+| [0026](0026-scene-components-and-meshes.md)    | Scene components and meshes           | Accepted           |
+| [0027](0027-renderer.md)                       | Renderer                              | Accepted           |
+| [0028](0028-materials-and-shaders.md)          | Materials and shaders                 | Accepted           |
+| [0029](0029-render-world-and-gpu-resources.md) | Render world and GPU resources        | Accepted           |
+| [0030](0030-code-style-reasons.md)             | Reasons for code style rules          | Accepted           |

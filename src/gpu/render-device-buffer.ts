@@ -10,9 +10,13 @@ class RenderDeviceBuffer {
      * @param usage - The usage flags to add to those required for writing.
      *
      * @remarks The size is in bytes.
+     * @remarks The size of the buffer is the given size rounded up to a multiple of 4.
      */
     static create(gpuDevice: GPUDevice, size: number, usage: GPUBufferUsageFlags) {
-        const gpuBuffer = gpuDevice.createBuffer({ size, usage: GPUBufferUsage.COPY_DST | usage });
+        const gpuBuffer = gpuDevice.createBuffer({
+            size: alignBufferSize(size),
+            usage: GPUBufferUsage.COPY_DST | usage,
+        });
 
         return new RenderDeviceBuffer(gpuDevice, gpuBuffer);
     }
@@ -27,10 +31,8 @@ class RenderDeviceBuffer {
      * @remarks The size of the buffer is the byte length of the data rounded up to a multiple of 4.
      */
     static createWithData(gpuDevice: GPUDevice, data: ArrayBufferView, usage: GPUBufferUsageFlags) {
-        const gpuBufferSize = 4 * Math.ceil(data.byteLength / 4);
-
         const gpuBuffer = gpuDevice.createBuffer({
-            size: gpuBufferSize,
+            size: alignBufferSize(data.byteLength),
             usage: GPUBufferUsage.COPY_DST | usage,
             mappedAtCreation: true,
         });
@@ -102,11 +104,14 @@ class RenderDeviceBuffer {
      * @param size - The new size.
      *
      * @remarks The size is in bytes.
+     * @remarks The size of the buffer is the given size rounded up to a multiple of 4.
      * @remarks A change of the size discards the contents and increases `version`.
      * @remarks The current size leaves this buffer unchanged.
      */
     resize(size: number) {
-        if (this.#gpuBuffer.size === size) {
+        const alignedSize = alignBufferSize(size);
+
+        if (this.#gpuBuffer.size === alignedSize) {
             return;
         }
 
@@ -114,7 +119,7 @@ class RenderDeviceBuffer {
 
         this.destroy();
 
-        this.#gpuBuffer = this.#gpuDevice.createBuffer({ size, usage });
+        this.#gpuBuffer = this.#gpuDevice.createBuffer({ size: alignedSize, usage });
 
         this.#version++;
     }
@@ -125,6 +130,10 @@ class RenderDeviceBuffer {
     destroy() {
         this.#gpuBuffer.destroy();
     }
+}
+
+function alignBufferSize(size: number) {
+    return 4 * Math.ceil(size / 4);
 }
 
 export { RenderDeviceBuffer };

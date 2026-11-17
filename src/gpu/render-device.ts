@@ -1,21 +1,13 @@
 import { RenderDeviceBuffer } from './render-device-buffer.ts';
 import { RenderDeviceTexture } from './render-device-texture.ts';
+import { RenderDeviceEventType } from './render-device-event-type.ts';
+import { RenderDeviceState } from './render-device-state.ts';
 
-const RenderDeviceEventType = Object.freeze({
-    DEVICE_LOST: 'devicelost',
-    UNCAPTURED_ERROR: 'uncapturederror',
-    COMPILATION_ERROR: 'compilationerror',
-});
+import type { RenderDeviceEventMap } from './types.ts';
 
 interface RenderDeviceOptions {
     adapterOptions?: GPURequestAdapterOptions;
     deviceDescriptor?: GPUDeviceDescriptor;
-}
-
-interface RenderDeviceEventMap {
-    [RenderDeviceEventType.DEVICE_LOST]: CustomEvent<GPUDeviceLostInfo>;
-    [RenderDeviceEventType.UNCAPTURED_ERROR]: CustomEvent<GPUError>;
-    [RenderDeviceEventType.COMPILATION_ERROR]: CustomEvent<GPUCompilationInfo>;
 }
 
 /**
@@ -43,23 +35,31 @@ class RenderDevice {
         }
 
         const gpuDevice = await gpuAdapter.requestDevice(options.deviceDescriptor);
+        const gpuPreferredCanvasFormat = gpu.getPreferredCanvasFormat();
 
-        return new RenderDevice(gpuDevice);
+        return new RenderDevice(gpuDevice, gpuPreferredCanvasFormat);
     }
 
     #gpuDevice: GPUDevice;
+    #gpuPreferredCanvasFormat: GPUTextureFormat;
 
     #eventTarget: EventTarget;
 
+    #state: RenderDeviceState;
+
     /**
-     * Creates a render device with the given WebGPU device.
+     * Creates a render device with the given WebGPU device and preferred canvas format.
      *
      * @param gpuDevice - The WebGPU device to wrap.
+     * @param gpuPreferredCanvasFormat - The texture format that the browser prefers for a canvas.
      */
-    constructor(gpuDevice: GPUDevice) {
+    constructor(gpuDevice: GPUDevice, gpuPreferredCanvasFormat: GPUTextureFormat) {
         this.#gpuDevice = gpuDevice;
+        this.#gpuPreferredCanvasFormat = gpuPreferredCanvasFormat;
 
         this.#eventTarget = new EventTarget();
+
+        this.#state = RenderDeviceState.ACTIVE;
 
         gpuDevice.lost.then((info) => this.#handleDeviceLost(info));
         gpuDevice.addEventListener('uncapturederror', (event) => this.#handleUncapturedError(event));
@@ -70,6 +70,20 @@ class RenderDevice {
      */
     get limits() {
         return this.#gpuDevice.limits;
+    }
+
+    /**
+     * The texture format that the browser prefers for a canvas.
+     */
+    get preferredCanvasFormat() {
+        return this.#gpuPreferredCanvasFormat;
+    }
+
+    /**
+     * The state of this render device.
+     */
+    get state() {
+        return this.#state;
     }
 
     // Events -----------------------------------------------------------------
@@ -87,9 +101,7 @@ class RenderDevice {
      * @remarks `uncapturederror` reports a GPU error that no other code has handled.
      * @remarks `compilationerror` reports a problem in the source code of a shader.
      */
-    addEventListener<
-        T extends typeof RenderDeviceEventType[keyof typeof RenderDeviceEventType],
-    >(
+    addEventListener<T extends RenderDeviceEventType>(
         eventType: T,
         eventListener: (event: RenderDeviceEventMap[T]) => void,
         eventListenerOptions: EventListenerOptions = {},
@@ -110,9 +122,7 @@ class RenderDevice {
      * @param eventListener - The listener to remove.
      * @param eventListenerOptions - The options of the listener.
      */
-    removeEventListener<
-        T extends typeof RenderDeviceEventType[keyof typeof RenderDeviceEventType],
-    >(
+    removeEventListener<T extends RenderDeviceEventType>(
         eventType: T,
         eventListener: (event: RenderDeviceEventMap[T]) => void,
         eventListenerOptions: EventListenerOptions = {},
@@ -133,10 +143,12 @@ class RenderDevice {
      * @param canvasConfiguration - The configuration of the context.
      *
      * @throws Error if the given canvas provides no WebGPU context.
+     *
+     * @remarks A configuration without a format uses the preferred canvas format.
      */
     createCanvasContext(
         canvasElement: HTMLCanvasElement,
-        canvasConfiguration: Omit<GPUCanvasConfiguration, 'device'>,
+        canvasConfiguration: Partial<Omit<GPUCanvasConfiguration, 'device'>> = {},
     ) {
         const canvasContext = canvasElement.getContext('webgpu');
 
@@ -144,7 +156,11 @@ class RenderDevice {
             throw new Error('RenderDevice.createCanvasContext: expected a canvas that provides a WebGPU context, received a canvas that does not.');
         }
 
-        canvasContext.configure({ ...canvasConfiguration, device: this.#gpuDevice });
+        canvasContext.configure({
+            format: this.#gpuPreferredCanvasFormat,
+            ...canvasConfiguration,
+            device: this.#gpuDevice,
+        });
 
         return canvasContext;
     }
@@ -215,6 +231,28 @@ class RenderDevice {
      */
     createUniformBufferWithData(data: ArrayBufferView) {
         return RenderDeviceBuffer.createWithData(this.#gpuDevice, data, GPUBufferUsage.UNIFORM);
+    }
+
+    /**
+     * Creates a storage buffer with the given size.
+     *
+     * @param size - The size of the buffer.
+     *
+     * @remarks The size is in bytes.
+     */
+    createStorageBuffer(size: number) {
+        return RenderDeviceBuffer.create(this.#gpuDevice, size, GPUBufferUsage.STORAGE);
+    }
+
+    /**
+     * Creates a storage buffer with the given data.
+     *
+     * @param data - The initial contents of the buffer.
+     *
+     * @remarks The size of the buffer is the byte length of the data rounded up to a multiple of 4.
+     */
+    createStorageBufferWithData(data: ArrayBufferView) {
+        return RenderDeviceBuffer.createWithData(this.#gpuDevice, data, GPUBufferUsage.STORAGE);
     }
 
     // Textures ---------------------------------------------------------------
@@ -317,13 +355,15 @@ class RenderDevice {
      * @remarks This method does not cause a `devicelost` event.
      */
     destroy() {
+        this.#state = RenderDeviceState.DESTROYED;
+
         this.#gpuDevice.destroy();
     }
 
     // Private ----------------------------------------------------------------
 
     #handleDeviceLost(info: GPUDeviceLostInfo) {
-        if (info.reason === 'destroyed') {
+        if (this.#state === RenderDeviceState.DESTROYED || info.reason === 'destroyed') {
             return;
         }
 
@@ -331,6 +371,8 @@ class RenderDevice {
             RenderDeviceEventType.DEVICE_LOST,
             { detail: info },
         );
+
+        this.#state = RenderDeviceState.LOST;
 
         this.#eventTarget.dispatchEvent(gpuDeviceLostEvent);
     }
